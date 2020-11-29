@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Ermin Kevric" />
+
+<meta name="date" content="2020-11-23" />
+
+<title>Ermin’s Journal</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/anchor-sections-1.0/anchor-sections.css" rel="stylesheet" />
+<script src="site_libs/anchor-sections-1.0/anchor-sections.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">MyLabJournal</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="journal.html">Journal</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Class notes
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="dictionary.html">Dictionary</a>
+    </li>
+    <li>
+      <a href="data_wrangling.html">Data Wrangling</a>
+    </li>
+    <li>
+      <a href="ggplot_graphs.html">ggplot graphs</a>
+    </li>
+    <li>
+      <a href="machine_learning.html">machine learning</a>
+    </li>
+  </ul>
+</li>
+<li>
+  <a href="links.html">Links</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Ermin’s Journal</h1>
+<h4 class="author">Ermin Kevric</h4>
+<h4 class="date">2020-11-23</h4>
+
+</div>
+
+
+<p>Last compiled: 2020-11-28</p>
+<div id="introduction-to-tidyverse-challenge" class="section level2">
+<h2><span class="header-section-number">0.1</span> Introduction to tidyverse challenge</h2>
+<p><img src="journal_files/figure-html/unnamed-chunk-1-1.png" width="1440" /></p>
+</div>
+<div id="data-acquisition-2a-asdasdasdasdadasdadadasd" class="section level2">
+<h2><span class="header-section-number">0.2</span> Data Acquisition 2a) asdasdasdasdadasdadadasd</h2>
+<pre><code>
+library(jsonlite)
+library(glue)
+library(httr)
+library(rstudioapi)
+library(tidyverse)
+
+# Looking up a location on accuweather.com for Hamburg, it can be found that
+# ... the location code for Hamburg is 178556. We need that for the data
+
+
+
+# Pulling data for weather forecast for one day for Hamburg.
+
+token    &lt;- &quot;R9NZ8MA6kDkcPPVHLLN6EBKS5pTRTw7D&quot;
+
+raw_accuweather_data &lt;- GET(glue(&quot;http://dataservice.accuweather.com/forecasts/v1/daily/1day/178556?apikey={token}&quot;))
+
+accuweather_data &lt;- content(raw_accuweather_data, as = &#39;text&#39;)
+accuweather_data_json &lt;- fromJSON(accuweather_data)
+forecast_hamburg &lt;- accuweather_data_json$DailyForecasts
+
+forecast_hamburg %&gt;% 
+  as_tibble()</code></pre>
+</div>
+<div id="data-acquisition-2b" class="section level2">
+<h2><span class="header-section-number">0.3</span> Data Acquisition 2b)</h2>
+<pre><code>library(RSQLite)
+library(tidyverse)
+library(httr)
+library(glue)
+library(jsonlite)
+library(rvest)
+library(stringi)
+library(xopen)
+library(dplyr)
+
+base_url &lt;- &#39;https://www.rosebikes.com/bikes&#39;
+
+# 1. Function to get bike family URLs.
+get_bike_family_urls &lt;- function(base_url) {
+  
+  bike_family_urls &lt;- read_html(base_url) %&gt;%
+    html_nodes(css = &quot;.catalog-categories-item &gt; a&quot;) %&gt;%
+    html_attr(&#39;href&#39;) %&gt;%
+    
+    # Convert vector to tibble
+    
+    enframe(name = &quot;position&quot;, value = &quot;subdirectory&quot;) %&gt;%
+    # Add the domain because we will get only the subdirectories
+    mutate(
+      url = glue(&#39;https://www.rosebikes.com{subdirectory}&#39;)
+    ) 
+  
+  bike_family_urls &lt;- bike_family_urls %&gt;% 
+    filter(!grepl(&#39;sale&#39;, url)) %&gt;%
+    filter(!grepl(&#39;kids&#39;, url))
+  bike_family_urls &lt;- bike_family_urls[&#39;url&#39;]
+  
+}
+
+
+# 2. Function to get bike family URLs.
+
+get_model_urls &lt;- function(url) {
+  
+  bike_type_url &lt;- read_html(url) %&gt;%
+    html_nodes(css = &quot;.catalog-category-bikes__content &gt; a&quot;) %&gt;%
+    html_attr(&#39;href&#39;) %&gt;%
+    enframe(name = &quot;position&quot;, value = &quot;url&quot;) %&gt;%
+    mutate(url = glue(&#39;https://www.rosebikes.com{url}&#39;)) 
+}
+
+
+# 3. Function to get the names of each bike 
+
+get_bike_names &lt;- function(url) {
+  
+  bike_model_name_tbl &lt;- read_html(url) %&gt;%
+    html_nodes(css = &quot;.catalog-category-model__title&quot;) %&gt;%
+    html_text() %&gt;%
+    # Convert vector to tibble
+    as.tibble()
+    
+  
+}
+
+# 4. Function to get the prices of each bike 
+
+get_bike_prices &lt;- function(url) {
+  
+  bike_model_price_tbl &lt;- read_html(url) %&gt;%
+    html_nodes(css = &quot;.product-tile-price__current-value&quot;) %&gt;%
+    html_text() %&gt;%
+    # Convert vector to tibble
+    as.tibble()
+  
+}
+
+
+
+#### APPLYING ABOVE FUNCTIONS
+
+bike_family_url_tbl &lt;- get_bike_family_urls(base_url)
+bike_family_url_tbl &lt;- bike_family_url_tbl %&gt;%
+  slice(1:3) # Pick 3 categories
+
+bike_model_url_tbl &lt;- tibble()
+
+for (i in seq_along(bike_family_url_tbl$url)) {
+  
+  web &lt;- toString(bike_family_url_tbl$url[i])
+  bike_model_url_tbl &lt;- bind_rows(bike_model_url_tbl, get_model_urls(web))
+  
+}
+
+
+
+bike_model_names_tbl &lt;- tibble()
+
+for (i in seq_along(bike_model_url_tbl$url)) {
+  
+  web &lt;- toString(bike_model_url_tbl$url[i])
+  bike_model_names_tbl &lt;- bind_rows(bike_model_names_tbl, get_bike_names(web))
+  
+}
+
+names(bike_model_names_tbl)[1] &lt;- &quot;Bike Model&quot;
+
+
+
+
+
+bike_model_prices_tbl &lt;- tibble()
+
+for (i in seq_along(bike_model_url_tbl$url)) {
+
+  web &lt;- toString(bike_model_url_tbl$url[i])
+  bike_model_prices_tbl &lt;- bind_rows(bike_model_prices_tbl, get_bike_prices(web))
+
+}
+names(bike_model_prices_tbl)[1] &lt;- &quot;Bike Prices&quot;
+
+
+table_of_prices &lt;- bind_cols(bike_model_names_tbl,bike_model_prices_tbl)</code></pre>
+</div>
+<div id="data-wrangling-a" class="section level2">
+<h2><span class="header-section-number">0.4</span> Data Wrangling a)</h2>
+<pre><code>
+
+library(vroom)
+library(RSQLite)
+library(tidyverse)
+library(httr)
+library(glue)
+library(jsonlite)
+library(rvest)
+library(stringi)
+library(xopen)
+library(dplyr)
+
+col_types &lt;- list(
+  id = col_character(),
+  type = col_character(),
+  number = col_character(),
+  country = col_character(),
+  date = col_date(&quot;%Y-%m-%d&quot;),
+  abstract = col_character(),
+  title = col_character(),
+  kind = col_character(),
+  num_claims = col_double(),
+  filename = col_character(),
+  withdrawn = col_double()
+)
+
+# For Assignee File
+col_types2 &lt;- list(
+  id = col_character(),
+  type = col_character(),
+  name_first = col_character(),
+  name_last = col_character(),
+  organization = col_character()
+)
+
+# For Patent Assignee File
+col_types3 &lt;- list(
+  patent_id = col_character(),
+  assignee_id = col_character(),
+  location_id = col_character()
+)
+  
+  
+  
+  
+
+doc_path &lt;- (&quot;C:/Users/Ermin Kevric/Desktop/TUHH/Semester I/Course Material/8. Business basics/Data Wrangling Patents/patent.tsv&quot;)
+doc_path2 &lt;- (&quot;C:/Users/Ermin Kevric/Desktop/TUHH/Semester I/Course Material/8. Business basics/DS_101/00_data/03_tidying/assignee.tsv&quot;)
+doc_path3 &lt;- (&quot;C:/Users/Ermin Kevric/Desktop/TUHH/Semester I/Course Material/8. Business basics/DS_101/00_data/03_tidying/patent_assignee.tsv&quot;)
+
+patent_tbl &lt;- vroom(
+  file       = doc_path, 
+  delim      = &quot;\t&quot;, 
+  col_types  = col_types,
+  na         = c(&quot;&quot;, &quot;NA&quot;, &quot;NULL&quot;)
+)
+
+
+assignee_tbl &lt;- vroom(
+  file       = doc_path2, 
+  delim      = &quot;\t&quot;, 
+  col_types  = col_types2,
+  na         = c(&quot;&quot;, &quot;NA&quot;, &quot;NULL&quot;)
+)
+
+pat_assignee_tbl &lt;- vroom(
+  file       = doc_path3, 
+  delim      = &quot;\t&quot;, 
+  col_types  = col_types3,
+  na         = c(&quot;&quot;, &quot;NA&quot;, &quot;NULL&quot;)
+) 
+
+
+# To choose the patents by corporations, we go to assignee and filter 
+# the type column keeping 2. This only gives us corporation names and their ids
+
+# USA CORPORATIONS WHICH HAVE FILED PATENTS AND THEIR ID&#39;S 
+corporations_id_names &lt;- assignee_tbl %&gt;%
+  select(id, type, organization) %&gt;%
+  filter(type == 2) # This here makes sure they&#39;re from USA
+
+
+
+
+# Need to check which corporations from corp_id_names have values in pat_assigne.
+# This means that we check which corps from USA have been assigned a patent. 
+
+top_patent_wrld &lt;- pat_assignee_tbl %&gt;%
+  group_by(assignee_id) %&gt;%
+  summarize(
+    count = n()
+    
+    ) %&gt;%
+  ungroup() %&gt;%
+  arrange(desc(count)) %&gt;%
+  rename(id = assignee_id) %&gt;%
+  head(100)
+                                 # Top companies in the world which
+                                 # filed the patents
+
+
+top_10_us &lt;- right_join(top_patent_wrld, corporations_id_names, by = &#39;id&#39;) %&gt;%
+  head(10) %&gt;%
+  select(count,organization) %&gt;%
+  print()</code></pre>
+</div>
+<div id="data-wrangling-b" class="section level2">
+<h2><span class="header-section-number">0.5</span> Data Wrangling b)</h2>
+<pre><code>library(vroom)
+library(RSQLite)
+library(tidyverse)
+library(httr)
+library(glue)
+library(jsonlite)
+library(rvest)
+library(stringi)
+library(xopen)
+library(dplyr)
+library(lubridate)
+
+col_types &lt;- list(
+  id = col_character(),
+  type = col_character(),
+  number = col_character(),
+  country = col_character(),
+  date = col_date(&quot;%Y-%m-%d&quot;),
+  abstract = col_character(),
+  title = col_character(),
+  kind = col_character(),
+  num_claims = col_double(),
+  filename = col_character(),
+  withdrawn = col_double()
+)
+
+# For Assignee File
+col_types2 &lt;- list(
+  id = col_character(),
+  type = col_character(),
+  name_first = col_character(),
+  name_last = col_character(),
+  organization = col_character()
+)
+
+# For Patent Assignee File
+col_types3 &lt;- list(
+  patent_id = col_character(),
+  assignee_id = col_character(),
+  location_id = col_character()
+)
+
+
+
+doc_path &lt;- (&quot;C:/Users/Ermin Kevric/Desktop/TUHH/Semester I/Course Material/8. Business basics/Data Wrangling Patents/patent.tsv&quot;)
+doc_path2 &lt;- (&quot;C:/Users/Ermin Kevric/Desktop/TUHH/Semester I/Course Material/8. Business basics/DS_101/00_data/03_tidying/assignee.tsv&quot;)
+doc_path3 &lt;- (&quot;C:/Users/Ermin Kevric/Desktop/TUHH/Semester I/Course Material/8. Business basics/DS_101/00_data/03_tidying/patent_assignee.tsv&quot;)
+
+patent_tbl &lt;- vroom(                     #TBL FOR PATENTS
+  file       = doc_path, 
+  delim      = &quot;\t&quot;, 
+  col_types  = col_types,
+  na         = c(&quot;&quot;, &quot;NA&quot;, &quot;NULL&quot;)
+)
+
+
+assignee_tbl &lt;- vroom(                     #TBL For companies 
+  file       = doc_path2, 
+  delim      = &quot;\t&quot;, 
+  col_types  = col_types2,
+  na         = c(&quot;&quot;, &quot;NA&quot;, &quot;NULL&quot;)
+)
+
+pat_assignee_tbl &lt;- vroom(                  # TBL for patetn-assigned comp.
+  file       = doc_path3, 
+  delim      = &quot;\t&quot;, 
+  col_types  = col_types3,
+  na         = c(&quot;&quot;, &quot;NA&quot;, &quot;NULL&quot;)
+) 
+
+
+
+# Filter assignee.tsv data to get U.s Companies Names and IDs.
+us_corp_filt &lt;- assignee_tbl %&gt;%
+  filter(type == 2) %&gt;%
+  select(id, organization) %&gt;%
+  rename(assignee_id = id) 
+
+
+# Filter patent.tsv data to get patents issued in 2019
+issued_2019 &lt;- patent_tbl %&gt;%
+  filter(year(date) == 2019) %&gt;%
+  select(number) %&gt;%
+  rename(patent_id = number)
+  
+
+dt1 &lt;- merge(us_corp_filt,pat_assignee_tbl,by=&quot;assignee_id&quot;)
+dt2 &lt;- merge(dt1, issued_2019, by = &quot;patent_id&quot;) %&gt;%
+  group_by(organization) %&gt;%
+  summarise(
+    count = n()
+  ) %&gt;%
+  arrange(desc(count)) %&gt;%
+  head(10)
+
+
+wrld_corp_filt &lt;- assignee_tbl %&gt;%
+  filter((type == 2 | type == 3)) %&gt;%
+  select(id, organization) %&gt;%
+  rename(assignee_id = id) 
+
+dt3 &lt;- merge(wrld_corp_filt,pat_assignee_tbl,by=&quot;assignee_id&quot;)
+dt4 &lt;- merge(dt3, issued_2019, by = &quot;patent_id&quot;) %&gt;%
+  group_by(organization) %&gt;%
+  summarise(
+    count = n()
+  ) %&gt;%
+  arrange(desc(count)) %&gt;%
+  head(10)</code></pre>
+</div>
+<div id="data-wrangling-c" class="section level2">
+<h2><span class="header-section-number">0.6</span> Data Wrangling c)</h2>
+<pre><code>
+library(vroom)
+library(RSQLite)
+library(tidyverse)
+library(httr)
+library(glue)
+library(jsonlite)
+library(rvest)
+library(stringi)
+library(xopen)
+library(dplyr)
+library(lubridate)
+
+
+
+
+col_types &lt;- list(
+  id = col_character(),
+  type = col_character(),
+  number = col_character(),
+  country = col_character(),
+  date = col_date(&quot;%Y-%m-%d&quot;),
+  abstract = col_character(),
+  title = col_character(),
+  kind = col_character(),
+  num_claims = col_double(),
+  filename = col_character(),
+  withdrawn = col_double()
+)
+
+
+
+
+#For Uspc
+col_types1 &lt;- list(
+  uuid = col_character(),
+  patent_id = col_character(),
+  mainclass_id = col_character(),
+  subclass_id = col_character(),
+  sequence = col_character ()
+)
+
+# For Assignee File
+col_types2 &lt;- list(
+  id = col_character(),
+  type = col_character(),
+  name_first = col_character(),
+  name_last = col_character(),
+  organization = col_character()
+)
+
+# For Patent Assignee File
+col_types3 &lt;- list(
+  patent_id = col_character(),
+  assignee_id = col_character(),
+  location_id = col_character()
+)
+
+
+
+
+
+
+
+doc_path &lt;- (&quot;C:/Users/Ermin Kevric/Desktop/TUHH/Semester I/Course Material/8. Business basics/Data Wrangling Patents/patent.tsv&quot;)
+doc_path1 &lt;- (&quot;C:/Users/Ermin Kevric/Desktop/TUHH/Semester I/Course Material/8. Business basics/DS_101/00_data/03_tidying/uspc.tsv&quot;)
+doc_path2 &lt;- (&quot;C:/Users/Ermin Kevric/Desktop/TUHH/Semester I/Course Material/8. Business basics/DS_101/00_data/03_tidying/assignee.tsv&quot;)
+doc_path3 &lt;- (&quot;C:/Users/Ermin Kevric/Desktop/TUHH/Semester I/Course Material/8. Business basics/DS_101/00_data/03_tidying/patent_assignee.tsv&quot;)
+
+
+
+
+
+uspc_tbl &lt;- vroom(                     #TBL For companies 
+  file       = doc_path1, 
+  delim      = &quot;\t&quot;, 
+  col_types  = col_types1,
+  na         = c(&quot;&quot;, &quot;NA&quot;, &quot;NULL&quot;)
+)
+
+
+assignee_tbl &lt;- vroom(                     #TBL For companies 
+  file       = doc_path2, 
+  delim      = &quot;\t&quot;, 
+  col_types  = col_types2,
+  na         = c(&quot;&quot;, &quot;NA&quot;, &quot;NULL&quot;)
+)
+
+pat_assignee_tbl &lt;- vroom(                  # TBL for patetn-assigned comp.
+  file       = doc_path3, 
+  delim      = &quot;\t&quot;, 
+  col_types  = col_types3,
+  na         = c(&quot;&quot;, &quot;NA&quot;, &quot;NULL&quot;)
+) 
+
+
+
+uspc_tbl_filtered &lt;- uspc_tbl %&gt;%
+  select(mainclass_id, patent_id, sequence) %&gt;%
+  filter(sequence == 0) %&gt;%
+  left_join(pat_assignee_tbl, by = &#39;patent_id&#39;)
+
+uspc_tbl_filtered2 &lt;- uspc_tbl_filtered %&gt;%
+  select(everything()) %&gt;%
+  distinct(patent_id)
+  
+
+num &lt;- unique(uspc_tbl_filtered$patent_id)
+
+# Check if the output table after merge resutlts in 5066573 observations. 
+# There are 5207318 NON unique observations but after filtering by distinct func.
+# there are 5066573 unique ones (patent_ids) which we want in one table with everything
+# elese from the uspc_table
+# THIS WORKS :D 
+santiy_check &lt;- uspc_tbl_filtered[!duplicated(uspc_tbl_filtered$patent_id), ]
+
+
+# Top 10 companies world wide. 
+id_mainclass_count_tbl &lt;- santiy_check %&gt;%
+  select(assignee_id, patent_id, mainclass_id) %&gt;%
+  group_by(assignee_id) %&gt;%
+  summarise(
+    count = n()
+  ) %&gt;%
+  arrange(desc(count)) %&gt;%
+  drop_na() %&gt;%
+  head(10)
+
+
+# 1. Match or Extract the top 10 companies in the world with the sanity check table.
+# 2. If we match, then group by assignee ID
+# 3. Make a new col, that is a list of mainclass IDs for the company
+
+
+result &lt;- left_join(id_mainclass_count_tbl, santiy_check) %&gt;%
+  select(assignee_id, mainclass_id, patent_id) %&gt;%
+  group_by(mainclass_id) %&gt;%
+  summarize(
+    
+    count = n()
+  ) %&gt;%
+  arrange(desc(count)) %&gt;%
+  head(5)
+
+result$mainclass_id
+
+</code></pre>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
