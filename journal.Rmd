@@ -108,7 +108,7 @@ sales_by_year %>%
   
 ```
 
-## Data Acquisition 2a)
+## Data Acquisition 2a) asdasdasdasdadasdadadasd
 
 ```
 
@@ -267,5 +267,378 @@ table_of_prices <- bind_cols(bike_model_names_tbl,bike_model_prices_tbl)
 ```
 
 
+## Data Wrangling a) 
+```
 
 
+library(vroom)
+library(RSQLite)
+library(tidyverse)
+library(httr)
+library(glue)
+library(jsonlite)
+library(rvest)
+library(stringi)
+library(xopen)
+library(dplyr)
+
+col_types <- list(
+  id = col_character(),
+  type = col_character(),
+  number = col_character(),
+  country = col_character(),
+  date = col_date("%Y-%m-%d"),
+  abstract = col_character(),
+  title = col_character(),
+  kind = col_character(),
+  num_claims = col_double(),
+  filename = col_character(),
+  withdrawn = col_double()
+)
+
+# For Assignee File
+col_types2 <- list(
+  id = col_character(),
+  type = col_character(),
+  name_first = col_character(),
+  name_last = col_character(),
+  organization = col_character()
+)
+
+# For Patent Assignee File
+col_types3 <- list(
+  patent_id = col_character(),
+  assignee_id = col_character(),
+  location_id = col_character()
+)
+  
+  
+  
+  
+
+doc_path <- ("C:/Users/Ermin Kevric/Desktop/TUHH/Semester I/Course Material/8. Business basics/Data Wrangling Patents/patent.tsv")
+doc_path2 <- ("C:/Users/Ermin Kevric/Desktop/TUHH/Semester I/Course Material/8. Business basics/DS_101/00_data/03_tidying/assignee.tsv")
+doc_path3 <- ("C:/Users/Ermin Kevric/Desktop/TUHH/Semester I/Course Material/8. Business basics/DS_101/00_data/03_tidying/patent_assignee.tsv")
+
+patent_tbl <- vroom(
+  file       = doc_path, 
+  delim      = "\t", 
+  col_types  = col_types,
+  na         = c("", "NA", "NULL")
+)
+
+
+assignee_tbl <- vroom(
+  file       = doc_path2, 
+  delim      = "\t", 
+  col_types  = col_types2,
+  na         = c("", "NA", "NULL")
+)
+
+pat_assignee_tbl <- vroom(
+  file       = doc_path3, 
+  delim      = "\t", 
+  col_types  = col_types3,
+  na         = c("", "NA", "NULL")
+) 
+
+
+# To choose the patents by corporations, we go to assignee and filter 
+# the type column keeping 2. This only gives us corporation names and their ids
+
+# USA CORPORATIONS WHICH HAVE FILED PATENTS AND THEIR ID'S 
+corporations_id_names <- assignee_tbl %>%
+  select(id, type, organization) %>%
+  filter(type == 2) # This here makes sure they're from USA
+
+
+
+
+# Need to check which corporations from corp_id_names have values in pat_assigne.
+# This means that we check which corps from USA have been assigned a patent. 
+
+top_patent_wrld <- pat_assignee_tbl %>%
+  group_by(assignee_id) %>%
+  summarize(
+    count = n()
+    
+    ) %>%
+  ungroup() %>%
+  arrange(desc(count)) %>%
+  rename(id = assignee_id) %>%
+  head(100)
+                                 # Top companies in the world which
+                                 # filed the patents
+
+
+top_10_us <- right_join(top_patent_wrld, corporations_id_names, by = 'id') %>%
+  head(10) %>%
+  select(count,organization) %>%
+  print()
+```
+
+## Data Wrangling b)
+
+```
+library(vroom)
+library(RSQLite)
+library(tidyverse)
+library(httr)
+library(glue)
+library(jsonlite)
+library(rvest)
+library(stringi)
+library(xopen)
+library(dplyr)
+library(lubridate)
+
+col_types <- list(
+  id = col_character(),
+  type = col_character(),
+  number = col_character(),
+  country = col_character(),
+  date = col_date("%Y-%m-%d"),
+  abstract = col_character(),
+  title = col_character(),
+  kind = col_character(),
+  num_claims = col_double(),
+  filename = col_character(),
+  withdrawn = col_double()
+)
+
+# For Assignee File
+col_types2 <- list(
+  id = col_character(),
+  type = col_character(),
+  name_first = col_character(),
+  name_last = col_character(),
+  organization = col_character()
+)
+
+# For Patent Assignee File
+col_types3 <- list(
+  patent_id = col_character(),
+  assignee_id = col_character(),
+  location_id = col_character()
+)
+
+
+
+doc_path <- ("C:/Users/Ermin Kevric/Desktop/TUHH/Semester I/Course Material/8. Business basics/Data Wrangling Patents/patent.tsv")
+doc_path2 <- ("C:/Users/Ermin Kevric/Desktop/TUHH/Semester I/Course Material/8. Business basics/DS_101/00_data/03_tidying/assignee.tsv")
+doc_path3 <- ("C:/Users/Ermin Kevric/Desktop/TUHH/Semester I/Course Material/8. Business basics/DS_101/00_data/03_tidying/patent_assignee.tsv")
+
+patent_tbl <- vroom(                     #TBL FOR PATENTS
+  file       = doc_path, 
+  delim      = "\t", 
+  col_types  = col_types,
+  na         = c("", "NA", "NULL")
+)
+
+
+assignee_tbl <- vroom(                     #TBL For companies 
+  file       = doc_path2, 
+  delim      = "\t", 
+  col_types  = col_types2,
+  na         = c("", "NA", "NULL")
+)
+
+pat_assignee_tbl <- vroom(                  # TBL for patetn-assigned comp.
+  file       = doc_path3, 
+  delim      = "\t", 
+  col_types  = col_types3,
+  na         = c("", "NA", "NULL")
+) 
+
+
+
+# Filter assignee.tsv data to get U.s Companies Names and IDs.
+us_corp_filt <- assignee_tbl %>%
+  filter(type == 2) %>%
+  select(id, organization) %>%
+  rename(assignee_id = id) 
+
+
+# Filter patent.tsv data to get patents issued in 2019
+issued_2019 <- patent_tbl %>%
+  filter(year(date) == 2019) %>%
+  select(number) %>%
+  rename(patent_id = number)
+  
+
+dt1 <- merge(us_corp_filt,pat_assignee_tbl,by="assignee_id")
+dt2 <- merge(dt1, issued_2019, by = "patent_id") %>%
+  group_by(organization) %>%
+  summarise(
+    count = n()
+  ) %>%
+  arrange(desc(count)) %>%
+  head(10)
+
+
+wrld_corp_filt <- assignee_tbl %>%
+  filter((type == 2 | type == 3)) %>%
+  select(id, organization) %>%
+  rename(assignee_id = id) 
+
+dt3 <- merge(wrld_corp_filt,pat_assignee_tbl,by="assignee_id")
+dt4 <- merge(dt3, issued_2019, by = "patent_id") %>%
+  group_by(organization) %>%
+  summarise(
+    count = n()
+  ) %>%
+  arrange(desc(count)) %>%
+  head(10)
+```
+
+## Data Wrangling c)
+
+```
+
+library(vroom)
+library(RSQLite)
+library(tidyverse)
+library(httr)
+library(glue)
+library(jsonlite)
+library(rvest)
+library(stringi)
+library(xopen)
+library(dplyr)
+library(lubridate)
+
+
+
+
+col_types <- list(
+  id = col_character(),
+  type = col_character(),
+  number = col_character(),
+  country = col_character(),
+  date = col_date("%Y-%m-%d"),
+  abstract = col_character(),
+  title = col_character(),
+  kind = col_character(),
+  num_claims = col_double(),
+  filename = col_character(),
+  withdrawn = col_double()
+)
+
+
+
+
+#For Uspc
+col_types1 <- list(
+  uuid = col_character(),
+  patent_id = col_character(),
+  mainclass_id = col_character(),
+  subclass_id = col_character(),
+  sequence = col_character ()
+)
+
+# For Assignee File
+col_types2 <- list(
+  id = col_character(),
+  type = col_character(),
+  name_first = col_character(),
+  name_last = col_character(),
+  organization = col_character()
+)
+
+# For Patent Assignee File
+col_types3 <- list(
+  patent_id = col_character(),
+  assignee_id = col_character(),
+  location_id = col_character()
+)
+
+
+
+
+
+
+
+doc_path <- ("C:/Users/Ermin Kevric/Desktop/TUHH/Semester I/Course Material/8. Business basics/Data Wrangling Patents/patent.tsv")
+doc_path1 <- ("C:/Users/Ermin Kevric/Desktop/TUHH/Semester I/Course Material/8. Business basics/DS_101/00_data/03_tidying/uspc.tsv")
+doc_path2 <- ("C:/Users/Ermin Kevric/Desktop/TUHH/Semester I/Course Material/8. Business basics/DS_101/00_data/03_tidying/assignee.tsv")
+doc_path3 <- ("C:/Users/Ermin Kevric/Desktop/TUHH/Semester I/Course Material/8. Business basics/DS_101/00_data/03_tidying/patent_assignee.tsv")
+
+
+
+
+
+uspc_tbl <- vroom(                     #TBL For companies 
+  file       = doc_path1, 
+  delim      = "\t", 
+  col_types  = col_types1,
+  na         = c("", "NA", "NULL")
+)
+
+
+assignee_tbl <- vroom(                     #TBL For companies 
+  file       = doc_path2, 
+  delim      = "\t", 
+  col_types  = col_types2,
+  na         = c("", "NA", "NULL")
+)
+
+pat_assignee_tbl <- vroom(                  # TBL for patetn-assigned comp.
+  file       = doc_path3, 
+  delim      = "\t", 
+  col_types  = col_types3,
+  na         = c("", "NA", "NULL")
+) 
+
+
+
+uspc_tbl_filtered <- uspc_tbl %>%
+  select(mainclass_id, patent_id, sequence) %>%
+  filter(sequence == 0) %>%
+  left_join(pat_assignee_tbl, by = 'patent_id')
+
+uspc_tbl_filtered2 <- uspc_tbl_filtered %>%
+  select(everything()) %>%
+  distinct(patent_id)
+  
+
+num <- unique(uspc_tbl_filtered$patent_id)
+
+# Check if the output table after merge resutlts in 5066573 observations. 
+# There are 5207318 NON unique observations but after filtering by distinct func.
+# there are 5066573 unique ones (patent_ids) which we want in one table with everything
+# elese from the uspc_table
+# THIS WORKS :D 
+santiy_check <- uspc_tbl_filtered[!duplicated(uspc_tbl_filtered$patent_id), ]
+
+
+# Top 10 companies world wide. 
+id_mainclass_count_tbl <- santiy_check %>%
+  select(assignee_id, patent_id, mainclass_id) %>%
+  group_by(assignee_id) %>%
+  summarise(
+    count = n()
+  ) %>%
+  arrange(desc(count)) %>%
+  drop_na() %>%
+  head(10)
+
+
+# 1. Match or Extract the top 10 companies in the world with the sanity check table.
+# 2. If we match, then group by assignee ID
+# 3. Make a new col, that is a list of mainclass IDs for the company
+
+
+result <- left_join(id_mainclass_count_tbl, santiy_check) %>%
+  select(assignee_id, mainclass_id, patent_id) %>%
+  group_by(mainclass_id) %>%
+  summarize(
+    
+    count = n()
+  ) %>%
+  arrange(desc(count)) %>%
+  head(5)
+
+result$mainclass_id
+
+
+```

@@ -410,13 +410,13 @@ div.tocify {
 </div>
 
 
-<p>Last compiled: 2020-11-26</p>
+<p>Last compiled: 2020-11-28</p>
 <div id="introduction-to-tidyverse-challenge" class="section level2">
 <h2><span class="header-section-number">0.1</span> Introduction to tidyverse challenge</h2>
 <p><img src="journal_files/figure-html/unnamed-chunk-1-1.png" width="1440" /></p>
 </div>
-<div id="data-acquisition-2a" class="section level2">
-<h2><span class="header-section-number">0.2</span> Data Acquisition 2a)</h2>
+<div id="data-acquisition-2a-asdasdasdasdadasdadadasd" class="section level2">
+<h2><span class="header-section-number">0.2</span> Data Acquisition 2a) asdasdasdasdadasdadadasd</h2>
 <pre><code>
 library(jsonlite)
 library(glue)
@@ -562,6 +562,377 @@ names(bike_model_prices_tbl)[1] &lt;- &quot;Bike Prices&quot;
 
 
 table_of_prices &lt;- bind_cols(bike_model_names_tbl,bike_model_prices_tbl)</code></pre>
+</div>
+<div id="data-wrangling-a" class="section level2">
+<h2><span class="header-section-number">0.4</span> Data Wrangling a)</h2>
+<pre><code>
+
+library(vroom)
+library(RSQLite)
+library(tidyverse)
+library(httr)
+library(glue)
+library(jsonlite)
+library(rvest)
+library(stringi)
+library(xopen)
+library(dplyr)
+
+col_types &lt;- list(
+  id = col_character(),
+  type = col_character(),
+  number = col_character(),
+  country = col_character(),
+  date = col_date(&quot;%Y-%m-%d&quot;),
+  abstract = col_character(),
+  title = col_character(),
+  kind = col_character(),
+  num_claims = col_double(),
+  filename = col_character(),
+  withdrawn = col_double()
+)
+
+# For Assignee File
+col_types2 &lt;- list(
+  id = col_character(),
+  type = col_character(),
+  name_first = col_character(),
+  name_last = col_character(),
+  organization = col_character()
+)
+
+# For Patent Assignee File
+col_types3 &lt;- list(
+  patent_id = col_character(),
+  assignee_id = col_character(),
+  location_id = col_character()
+)
+  
+  
+  
+  
+
+doc_path &lt;- (&quot;C:/Users/Ermin Kevric/Desktop/TUHH/Semester I/Course Material/8. Business basics/Data Wrangling Patents/patent.tsv&quot;)
+doc_path2 &lt;- (&quot;C:/Users/Ermin Kevric/Desktop/TUHH/Semester I/Course Material/8. Business basics/DS_101/00_data/03_tidying/assignee.tsv&quot;)
+doc_path3 &lt;- (&quot;C:/Users/Ermin Kevric/Desktop/TUHH/Semester I/Course Material/8. Business basics/DS_101/00_data/03_tidying/patent_assignee.tsv&quot;)
+
+patent_tbl &lt;- vroom(
+  file       = doc_path, 
+  delim      = &quot;\t&quot;, 
+  col_types  = col_types,
+  na         = c(&quot;&quot;, &quot;NA&quot;, &quot;NULL&quot;)
+)
+
+
+assignee_tbl &lt;- vroom(
+  file       = doc_path2, 
+  delim      = &quot;\t&quot;, 
+  col_types  = col_types2,
+  na         = c(&quot;&quot;, &quot;NA&quot;, &quot;NULL&quot;)
+)
+
+pat_assignee_tbl &lt;- vroom(
+  file       = doc_path3, 
+  delim      = &quot;\t&quot;, 
+  col_types  = col_types3,
+  na         = c(&quot;&quot;, &quot;NA&quot;, &quot;NULL&quot;)
+) 
+
+
+# To choose the patents by corporations, we go to assignee and filter 
+# the type column keeping 2. This only gives us corporation names and their ids
+
+# USA CORPORATIONS WHICH HAVE FILED PATENTS AND THEIR ID&#39;S 
+corporations_id_names &lt;- assignee_tbl %&gt;%
+  select(id, type, organization) %&gt;%
+  filter(type == 2) # This here makes sure they&#39;re from USA
+
+
+
+
+# Need to check which corporations from corp_id_names have values in pat_assigne.
+# This means that we check which corps from USA have been assigned a patent. 
+
+top_patent_wrld &lt;- pat_assignee_tbl %&gt;%
+  group_by(assignee_id) %&gt;%
+  summarize(
+    count = n()
+    
+    ) %&gt;%
+  ungroup() %&gt;%
+  arrange(desc(count)) %&gt;%
+  rename(id = assignee_id) %&gt;%
+  head(100)
+                                 # Top companies in the world which
+                                 # filed the patents
+
+
+top_10_us &lt;- right_join(top_patent_wrld, corporations_id_names, by = &#39;id&#39;) %&gt;%
+  head(10) %&gt;%
+  select(count,organization) %&gt;%
+  print()</code></pre>
+</div>
+<div id="data-wrangling-b" class="section level2">
+<h2><span class="header-section-number">0.5</span> Data Wrangling b)</h2>
+<pre><code>library(vroom)
+library(RSQLite)
+library(tidyverse)
+library(httr)
+library(glue)
+library(jsonlite)
+library(rvest)
+library(stringi)
+library(xopen)
+library(dplyr)
+library(lubridate)
+
+col_types &lt;- list(
+  id = col_character(),
+  type = col_character(),
+  number = col_character(),
+  country = col_character(),
+  date = col_date(&quot;%Y-%m-%d&quot;),
+  abstract = col_character(),
+  title = col_character(),
+  kind = col_character(),
+  num_claims = col_double(),
+  filename = col_character(),
+  withdrawn = col_double()
+)
+
+# For Assignee File
+col_types2 &lt;- list(
+  id = col_character(),
+  type = col_character(),
+  name_first = col_character(),
+  name_last = col_character(),
+  organization = col_character()
+)
+
+# For Patent Assignee File
+col_types3 &lt;- list(
+  patent_id = col_character(),
+  assignee_id = col_character(),
+  location_id = col_character()
+)
+
+
+
+doc_path &lt;- (&quot;C:/Users/Ermin Kevric/Desktop/TUHH/Semester I/Course Material/8. Business basics/Data Wrangling Patents/patent.tsv&quot;)
+doc_path2 &lt;- (&quot;C:/Users/Ermin Kevric/Desktop/TUHH/Semester I/Course Material/8. Business basics/DS_101/00_data/03_tidying/assignee.tsv&quot;)
+doc_path3 &lt;- (&quot;C:/Users/Ermin Kevric/Desktop/TUHH/Semester I/Course Material/8. Business basics/DS_101/00_data/03_tidying/patent_assignee.tsv&quot;)
+
+patent_tbl &lt;- vroom(                     #TBL FOR PATENTS
+  file       = doc_path, 
+  delim      = &quot;\t&quot;, 
+  col_types  = col_types,
+  na         = c(&quot;&quot;, &quot;NA&quot;, &quot;NULL&quot;)
+)
+
+
+assignee_tbl &lt;- vroom(                     #TBL For companies 
+  file       = doc_path2, 
+  delim      = &quot;\t&quot;, 
+  col_types  = col_types2,
+  na         = c(&quot;&quot;, &quot;NA&quot;, &quot;NULL&quot;)
+)
+
+pat_assignee_tbl &lt;- vroom(                  # TBL for patetn-assigned comp.
+  file       = doc_path3, 
+  delim      = &quot;\t&quot;, 
+  col_types  = col_types3,
+  na         = c(&quot;&quot;, &quot;NA&quot;, &quot;NULL&quot;)
+) 
+
+
+
+# Filter assignee.tsv data to get U.s Companies Names and IDs.
+us_corp_filt &lt;- assignee_tbl %&gt;%
+  filter(type == 2) %&gt;%
+  select(id, organization) %&gt;%
+  rename(assignee_id = id) 
+
+
+# Filter patent.tsv data to get patents issued in 2019
+issued_2019 &lt;- patent_tbl %&gt;%
+  filter(year(date) == 2019) %&gt;%
+  select(number) %&gt;%
+  rename(patent_id = number)
+  
+
+dt1 &lt;- merge(us_corp_filt,pat_assignee_tbl,by=&quot;assignee_id&quot;)
+dt2 &lt;- merge(dt1, issued_2019, by = &quot;patent_id&quot;) %&gt;%
+  group_by(organization) %&gt;%
+  summarise(
+    count = n()
+  ) %&gt;%
+  arrange(desc(count)) %&gt;%
+  head(10)
+
+
+wrld_corp_filt &lt;- assignee_tbl %&gt;%
+  filter((type == 2 | type == 3)) %&gt;%
+  select(id, organization) %&gt;%
+  rename(assignee_id = id) 
+
+dt3 &lt;- merge(wrld_corp_filt,pat_assignee_tbl,by=&quot;assignee_id&quot;)
+dt4 &lt;- merge(dt3, issued_2019, by = &quot;patent_id&quot;) %&gt;%
+  group_by(organization) %&gt;%
+  summarise(
+    count = n()
+  ) %&gt;%
+  arrange(desc(count)) %&gt;%
+  head(10)</code></pre>
+</div>
+<div id="data-wrangling-c" class="section level2">
+<h2><span class="header-section-number">0.6</span> Data Wrangling c)</h2>
+<pre><code>
+library(vroom)
+library(RSQLite)
+library(tidyverse)
+library(httr)
+library(glue)
+library(jsonlite)
+library(rvest)
+library(stringi)
+library(xopen)
+library(dplyr)
+library(lubridate)
+
+
+
+
+col_types &lt;- list(
+  id = col_character(),
+  type = col_character(),
+  number = col_character(),
+  country = col_character(),
+  date = col_date(&quot;%Y-%m-%d&quot;),
+  abstract = col_character(),
+  title = col_character(),
+  kind = col_character(),
+  num_claims = col_double(),
+  filename = col_character(),
+  withdrawn = col_double()
+)
+
+
+
+
+#For Uspc
+col_types1 &lt;- list(
+  uuid = col_character(),
+  patent_id = col_character(),
+  mainclass_id = col_character(),
+  subclass_id = col_character(),
+  sequence = col_character ()
+)
+
+# For Assignee File
+col_types2 &lt;- list(
+  id = col_character(),
+  type = col_character(),
+  name_first = col_character(),
+  name_last = col_character(),
+  organization = col_character()
+)
+
+# For Patent Assignee File
+col_types3 &lt;- list(
+  patent_id = col_character(),
+  assignee_id = col_character(),
+  location_id = col_character()
+)
+
+
+
+
+
+
+
+doc_path &lt;- (&quot;C:/Users/Ermin Kevric/Desktop/TUHH/Semester I/Course Material/8. Business basics/Data Wrangling Patents/patent.tsv&quot;)
+doc_path1 &lt;- (&quot;C:/Users/Ermin Kevric/Desktop/TUHH/Semester I/Course Material/8. Business basics/DS_101/00_data/03_tidying/uspc.tsv&quot;)
+doc_path2 &lt;- (&quot;C:/Users/Ermin Kevric/Desktop/TUHH/Semester I/Course Material/8. Business basics/DS_101/00_data/03_tidying/assignee.tsv&quot;)
+doc_path3 &lt;- (&quot;C:/Users/Ermin Kevric/Desktop/TUHH/Semester I/Course Material/8. Business basics/DS_101/00_data/03_tidying/patent_assignee.tsv&quot;)
+
+
+
+
+
+uspc_tbl &lt;- vroom(                     #TBL For companies 
+  file       = doc_path1, 
+  delim      = &quot;\t&quot;, 
+  col_types  = col_types1,
+  na         = c(&quot;&quot;, &quot;NA&quot;, &quot;NULL&quot;)
+)
+
+
+assignee_tbl &lt;- vroom(                     #TBL For companies 
+  file       = doc_path2, 
+  delim      = &quot;\t&quot;, 
+  col_types  = col_types2,
+  na         = c(&quot;&quot;, &quot;NA&quot;, &quot;NULL&quot;)
+)
+
+pat_assignee_tbl &lt;- vroom(                  # TBL for patetn-assigned comp.
+  file       = doc_path3, 
+  delim      = &quot;\t&quot;, 
+  col_types  = col_types3,
+  na         = c(&quot;&quot;, &quot;NA&quot;, &quot;NULL&quot;)
+) 
+
+
+
+uspc_tbl_filtered &lt;- uspc_tbl %&gt;%
+  select(mainclass_id, patent_id, sequence) %&gt;%
+  filter(sequence == 0) %&gt;%
+  left_join(pat_assignee_tbl, by = &#39;patent_id&#39;)
+
+uspc_tbl_filtered2 &lt;- uspc_tbl_filtered %&gt;%
+  select(everything()) %&gt;%
+  distinct(patent_id)
+  
+
+num &lt;- unique(uspc_tbl_filtered$patent_id)
+
+# Check if the output table after merge resutlts in 5066573 observations. 
+# There are 5207318 NON unique observations but after filtering by distinct func.
+# there are 5066573 unique ones (patent_ids) which we want in one table with everything
+# elese from the uspc_table
+# THIS WORKS :D 
+santiy_check &lt;- uspc_tbl_filtered[!duplicated(uspc_tbl_filtered$patent_id), ]
+
+
+# Top 10 companies world wide. 
+id_mainclass_count_tbl &lt;- santiy_check %&gt;%
+  select(assignee_id, patent_id, mainclass_id) %&gt;%
+  group_by(assignee_id) %&gt;%
+  summarise(
+    count = n()
+  ) %&gt;%
+  arrange(desc(count)) %&gt;%
+  drop_na() %&gt;%
+  head(10)
+
+
+# 1. Match or Extract the top 10 companies in the world with the sanity check table.
+# 2. If we match, then group by assignee ID
+# 3. Make a new col, that is a list of mainclass IDs for the company
+
+
+result &lt;- left_join(id_mainclass_count_tbl, santiy_check) %&gt;%
+  select(assignee_id, mainclass_id, patent_id) %&gt;%
+  group_by(mainclass_id) %&gt;%
+  summarize(
+    
+    count = n()
+  ) %&gt;%
+  arrange(desc(count)) %&gt;%
+  head(5)
+
+result$mainclass_id
+
+</code></pre>
 </div>
 
 
