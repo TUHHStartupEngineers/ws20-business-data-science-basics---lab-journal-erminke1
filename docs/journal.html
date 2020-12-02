@@ -822,10 +822,8 @@ top_10_us &lt;- right_join(top_patent_wrld, corporations_id_names, by = &#39;id&
 temp &lt;- tempfile()
 write_rds(top_10_us, temp)</code></pre>
 </div>
-<div id="r-echo-true-read_rdstemp2-knitrkabletop_10_usorganization-col.names-company-name-caption-top-10-us-companies-by-patent-count" class="section level1">
-<h1><span class="header-section-number">1</span> <code>{r, echo = TRUE} # read_rds(temp2) # knitr::kable(top_10_us$organization, col.names = 'Company name', caption = 'Top 10 US companies by patent count') #</code></h1>
 <div id="data-wrangling-b" class="section level2">
-<h2><span class="header-section-number">1.1</span> Data Wrangling b)</h2>
+<h2><span class="header-section-number">0.5</span> Data Wrangling b)</h2>
 <pre class="r"><code>library(vroom)
 library(RSQLite)
 library(tidyverse)
@@ -948,7 +946,7 @@ write_rds(dt4,temp2)</code></pre>
 temp2</code></pre>
 </div>
 <div id="data-wrangling-c" class="section level2">
-<h2><span class="header-section-number">1.2</span> Data Wrangling c)</h2>
+<h2><span class="header-section-number">0.6</span> Data Wrangling c)</h2>
 <pre><code>
 library(vroom)
 library(RSQLite)
@@ -1099,7 +1097,7 @@ uspc_tbl_filtered &lt;- uspc_tbl %&gt;%
 </code></pre>
 </div>
 <div id="data-visualization-a" class="section level2">
-<h2><span class="header-section-number">1.3</span> Data Visualization a)</h2>
+<h2><span class="header-section-number">0.7</span> Data Visualization a)</h2>
 <pre class="r"><code>library(tidyverse)
 library(dplyr)
 library(lubridate)
@@ -1138,7 +1136,7 @@ covid_data_tbl2 %&gt;%
 <p><img src="journal_files/figure-html/unnamed-chunk-6-1.png" width="1440" /></p>
 </div>
 <div id="data-visualization-b" class="section level2">
-<h2><span class="header-section-number">1.4</span> Data Visualization b)</h2>
+<h2><span class="header-section-number">0.8</span> Data Visualization b)</h2>
 <pre class="r"><code>library(tidyverse)
 library(dplyr)
 library(lubridate)
@@ -1195,7 +1193,6 @@ ggplot(final_tbl, aes(long, lat, group = group))+
   geom_polygon(aes(fill = mort_rate), color = &quot;white&quot;)+
   scale_fill_gradient(low = &#39;orange&#39;, high = &#39;red&#39;, na.value = &#39;white&#39;)</code></pre>
 <p><img src="journal_files/figure-html/unnamed-chunk-7-1.png" width="1440" /></p>
-</div>
 </div>
 
 

@@ -403,10 +403,7 @@ write_rds(top_10_us, temp)
 ```
 
 
-# ```{r, echo = TRUE}
-# read_rds(temp2)
-# knitr::kable(top_10_us$organization, col.names = 'Company name', caption = 'Top 10 US companies by patent count')
-# ```
+
 
 
 
