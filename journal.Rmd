@@ -24,9 +24,7 @@ Last compiled: `r Sys.Date()`
 
 ## Introduction to tidyverse challenge
 
-
-
-```{r echo = FALSE}
+```{r, echo = TRUE}
 # 1.0 Load libraries ----
 
 library('tidyverse')
@@ -108,7 +106,7 @@ sales_by_year %>%
   
 ```
 
-## Data Acquisition 2a) asdasdasdasdadasdadadasd
+## Data Acquisition 2a)
 
 ```
 
@@ -134,7 +132,10 @@ accuweather_data_json <- fromJSON(accuweather_data)
 forecast_hamburg <- accuweather_data_json$DailyForecasts
 
 forecast_hamburg %>% 
-  as_tibble()
+  as_tibble() %>%
+  print.table()
+
+
 ```
 
 
@@ -145,7 +146,7 @@ forecast_hamburg %>%
 
 ## Data Acquisition 2b)
 
-```
+```{r, echo = TRUE}
 library(RSQLite)
 library(tidyverse)
 library(httr)
@@ -264,6 +265,7 @@ names(bike_model_prices_tbl)[1] <- "Bike Prices"
 
 
 table_of_prices <- bind_cols(bike_model_names_tbl,bike_model_prices_tbl)
+knitr::kable(table_of_prices[1:10, ], caption = 'Rosebike.com bicycle prices')
 ```
 
 
@@ -343,10 +345,17 @@ pat_assignee_tbl <- vroom(
 ) 
 
 
-# To choose the patents by corporations, we go to assignee and filter 
-# the type column keeping 2. This only gives us corporation names and their ids
 
-# USA CORPORATIONS WHICH HAVE FILED PATENTS AND THEIR ID'S 
+
+
+
+# List the 10 US companies with the most assigned/granted patents.
+
+
+# To choose the patents by corporations, we go to assignee and filter 
+# the type column keeping 2. 
+
+# USA corporation names and their assignee IDs
 corporations_id_names <- assignee_tbl %>%
   select(id, type, organization) %>%
   filter(type == 2) # This here makes sure they're from USA
@@ -354,8 +363,10 @@ corporations_id_names <- assignee_tbl %>%
 
 
 
-# Need to check which corporations from corp_id_names have values in pat_assigne.
-# This means that we check which corps from USA have been assigned a patent. 
+# Top companies in the world which have been assigned a patent. 
+# We can group by the assignee_id, which is unique to each corporation, 
+# and then simply count the number of patents for that corporation.
+
 
 top_patent_wrld <- pat_assignee_tbl %>%
   group_by(assignee_id) %>%
@@ -366,15 +377,24 @@ top_patent_wrld <- pat_assignee_tbl %>%
   ungroup() %>%
   arrange(desc(count)) %>%
   rename(id = assignee_id) %>%
-  head(100)
-                                 # Top companies in the world which
-                                 # filed the patents
+  head(100)           # Top 100 companies in the world which have been granted a patent.
+                                  
 
+# Top 100 companies in the world is reasonably high to cross reference with
+# U.S companies. To do this, a right_join by their unique id can be used.
 
 top_10_us <- right_join(top_patent_wrld, corporations_id_names, by = 'id') %>%
   head(10) %>%
   select(count,organization) %>%
-  print()
+  
+
+print(top_10_us$organization)
+
+
+
+
+
+
 ```
 
 ## Data Wrangling b)
@@ -452,7 +472,7 @@ pat_assignee_tbl <- vroom(                  # TBL for patetn-assigned comp.
 
 
 
-# Filter assignee.tsv data to get U.s Companies Names and IDs.
+# Filter assignee.tsv data to get U.S Companies Names and IDs.
 us_corp_filt <- assignee_tbl %>%
   filter(type == 2) %>%
   select(id, organization) %>%
@@ -465,8 +485,33 @@ issued_2019 <- patent_tbl %>%
   select(number) %>%
   rename(patent_id = number)
   
+# Combine U.S corporation assignee numbers with companies that have 
+# been assigned a patent (from around the world). This gives patents by their ID filed by 
+# u.s companies. 
 
 dt1 <- merge(us_corp_filt,pat_assignee_tbl,by="assignee_id")
+
+
+
+
+# some tests to see if we are getting good data.
+
+
+
+# santiy_check <- dt1[!duplicated(dt1$patent_id), ] # We see that some patents repeat.
+# 
+# sanity_check2 <- pat_assignee_tbl %>%
+#   group_by(patent_id) %>%
+#   summarize (
+#     count = n()
+#   )
+
+
+
+
+
+
+# Then combine the table of patents issued in the U.S for 201
 dt2 <- merge(dt1, issued_2019, by = "patent_id") %>%
   group_by(organization) %>%
   summarise(
@@ -489,6 +534,9 @@ dt4 <- merge(dt3, issued_2019, by = "patent_id") %>%
   ) %>%
   arrange(desc(count)) %>%
   head(10)
+
+print(dt4)
+
 ```
 
 ## Data Wrangling c)
@@ -587,58 +635,171 @@ pat_assignee_tbl <- vroom(                  # TBL for patetn-assigned comp.
   delim      = "\t", 
   col_types  = col_types3,
   na         = c("", "NA", "NULL")
-) 
+)
+  
+  
+  # Find the names of top 10 us companies 
 
+corporations_id_names <- assignee_tbl %>%
+  select(id, type, organization) %>%
+  filter(type == 2) %>%
+  rename(assignee_id = id)# This here makes sure they're from USA 
+
+
+
+
+# Top companies in the world which have been assigned a patent. 
+# We can group by the assignee_id, which is unique to each corporation, 
+# and then simply count the number of patents for that corporation.
+
+
+top_patent_wrld <- pat_assignee_tbl %>%
+  group_by(assignee_id) %>%
+  summarize(
+    count = n()
+    
+  ) %>%
+  ungroup() %>%
+  arrange(desc(count)) %>%
+  
+  head(100)           # Top 100 companies in the world which have been granted a patent.
+
+
+# Top 100 companies in the world is reasonably high to cross reference with
+# U.S companies. To do this, a right_join by their unique id can be used.
+
+top_10_us <- right_join(top_patent_wrld, corporations_id_names, by = 'assignee_id') %>%
+  head(10) %>%
+  select(assignee_id)
 
 
 uspc_tbl_filtered <- uspc_tbl %>%
   select(mainclass_id, patent_id, sequence) %>%
   filter(sequence == 0) %>%
-  left_join(pat_assignee_tbl, by = 'patent_id')
-
-uspc_tbl_filtered2 <- uspc_tbl_filtered %>%
-  select(everything()) %>%
-  distinct(patent_id)
-  
-
-num <- unique(uspc_tbl_filtered$patent_id)
-
-# Check if the output table after merge resutlts in 5066573 observations. 
-# There are 5207318 NON unique observations but after filtering by distinct func.
-# there are 5066573 unique ones (patent_ids) which we want in one table with everything
-# elese from the uspc_table
-# THIS WORKS :D 
-santiy_check <- uspc_tbl_filtered[!duplicated(uspc_tbl_filtered$patent_id), ]
-
-
-# Top 10 companies world wide. 
-id_mainclass_count_tbl <- santiy_check %>%
-  select(assignee_id, patent_id, mainclass_id) %>%
-  group_by(assignee_id) %>%
-  summarise(
-    count = n()
-  ) %>%
+  left_join(pat_assignee_tbl, by = 'patent_id') %>%
+  merge(top_10_us, by = 'assignee_id') %>%
+  group_by(mainclass_id) %>%
+  summarize(
+    count = n() 
+  )%>%
   arrange(desc(count)) %>%
-  drop_na() %>%
   head(10)
 
 
-# 1. Match or Extract the top 10 companies in the world with the sanity check table.
-# 2. If we match, then group by assignee ID
-# 3. Make a new col, that is a list of mainclass IDs for the company
 
 
-result <- left_join(id_mainclass_count_tbl, santiy_check) %>%
-  select(assignee_id, mainclass_id, patent_id) %>%
-  group_by(mainclass_id) %>%
-  summarize(
+
+
+```
+
+## Data Visualization a)
+
+
+```{r, echo = TRUE}
+
+library(tidyverse)
+library(dplyr)
+library(lubridate)
+library(ggplot2)
+library(scales)
+
+
+
+covid_data_tbl <- read_csv("https://opendata.ecdc.europa.eu/covid19/casedistribution/csv")
+covid_data_tbl <- covid_data_tbl[order(as.Date(covid_data_tbl$dateRep, format="%d/%m/%Y")),]
+covid_data_tbl$cases <- abs(covid_data_tbl$cases) # no negative cases :)
+
+
+covid_data_tbl2 <- covid_data_tbl %>%
+  filter(countriesAndTerritories %in% c('Spain', 'United_Kingdom', 'France', 'Germany','United_States_of_America')) %>%
+  select(dateRep, countriesAndTerritories, cases) %>%
+  group_by(countriesAndTerritories) %>%
+  mutate(cumulativeCases = cumsum(cases))  %>%
+  select(dateRep, countriesAndTerritories, cumulativeCases) %>%
+  rename(countries = countriesAndTerritories)
+
+
+# Plotting the values 
+ticks = c("Dec","Jan", 'Feb','March', 'April', 'May', 'June','July',
+          'Aug','Sept','Oct','Nov','Dec')
+
+
+y_ticks = seq(0,max(covid_data_tbl2$cumulativeCases),1250000)
+
+covid_data_tbl2 %>%
+  ggplot(aes(x = as.POSIXct(dateRep, format = '%d/%m/%Y'), y = cumulativeCases)) +
+  geom_line(aes(color = countries), size = 1) +
+  labs(x = 'Year 2020', y='Cumulative Cases', fill = 'Countries') +
+  scale_x_datetime(date_breaks = 'month', labels = label_date_short()) +
+  scale_y_continuous(breaks = c(y_ticks))
+
+
+
+
+```
+
+
+## Data Visualization b)
+
+```{r, echo = TRUE}
+
+
+library(tidyverse)
+library(dplyr)
+library(lubridate)
+library(ggplot2)
+
+
+theme_set(
+  theme_dark()
+)
+
+covid_data_tbl <- read_csv("https://opendata.ecdc.europa.eu/covid19/casedistribution/csv")
+covid_data_tbl$cases <- abs(covid_data_tbl$cases) # no negative cases :)
+covid_data_tbl$deaths <- abs(covid_data_tbl$deaths) # no negative deaths :)
+
+world <- map_data('world') %>%
+  rename(countries = region) %>%
+  dplyr::select(countries,long,lat,group) 
+  
+
+
+covid_data_tbl <- covid_data_tbl %>%
+  mutate(across(countriesAndTerritories, str_replace_all, "_", " ")) %>%
+  mutate(countriesAndTerritories = case_when(
     
-    count = n()
-  ) %>%
-  arrange(desc(count)) %>%
-  head(5)
+    countriesAndTerritories == "United Kingdom" ~ "UK",
+    countriesAndTerritories == "United States of America" ~ "USA",
+    countriesAndTerritories == "Czechia" ~ "Czech Republic",
+    TRUE ~ countriesAndTerritories
+    
+  ))
 
-result$mainclass_id
+population <- covid_data_tbl %>%
+  group_by(countriesAndTerritories) %>%
+  dplyr::select(countriesAndTerritories, popData2019) %>%
+  unique() %>%
+  rename(countries = countriesAndTerritories)
+  
+
+mortality_rate_tbl <- covid_data_tbl %>%
+  group_by(countriesAndTerritories) %>%
+  summarise( 
+    total_deaths = sum(deaths)
+    ) %>%
+  rename(countries = countriesAndTerritories)
+
+
+useful_map <- left_join(population,mortality_rate_tbl, by = "countries")
+
+final_tbl <- left_join(world, useful_map, by = 'countries') %>%
+  mutate(mort_rate = total_deaths / popData2019)
+
+#plotting the values
+ggplot(final_tbl, aes(long, lat, group = group))+
+  geom_polygon(aes(fill = mort_rate), color = "white")+
+  scale_fill_gradient(low = 'orange', high = 'red', na.value = 'white')
+
 
 
 ```

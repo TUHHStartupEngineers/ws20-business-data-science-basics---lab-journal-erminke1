@@ -410,13 +410,91 @@ div.tocify {
 </div>
 
 
-<p>Last compiled: 2020-11-28</p>
+<p>Last compiled: 2020-12-02</p>
 <div id="introduction-to-tidyverse-challenge" class="section level2">
 <h2><span class="header-section-number">0.1</span> Introduction to tidyverse challenge</h2>
+<pre class="r"><code># 1.0 Load libraries ----
+
+library(&#39;tidyverse&#39;)
+library(readxl)
+library(lubridate)
+
+
+bikes_data &lt;- read_excel(&quot;C:/Users/Ermin Kevric/Desktop/TUHH/Semester I/Course Material/8. Business basics/DS_101/00_data/01_bike_sales/01_raw_data/bikes.xlsx&quot;)
+orderlines_data &lt;- read_excel(&quot;C:/Users/Ermin Kevric/Desktop/TUHH/Semester I/Course Material/8. Business basics/DS_101/00_data/01_bike_sales/01_raw_data/orderlines.xlsx&quot;)
+bikeshops_data &lt;- read_excel(&quot;C:/Users/Ermin Kevric/Desktop/TUHH/Semester I/Course Material/8. Business basics/DS_101/00_data/01_bike_sales/01_raw_data/bikeshops.xlsx&quot;)
+
+new_orderlines_joined &lt;- orderlines_data %&gt;%
+  
+  left_join(bikes_data, by=c(&#39;product.id&#39; = &#39;bike.id&#39;)) %&gt;%
+  left_join(bikeshops_data, by = c(&#39;customer.id&#39; = &quot;bikeshop.id&quot;))
+
+
+wrangled_tbl &lt;- new_orderlines_joined %&gt;%
+  
+  separate(col = category,
+           into = c(&#39;category.1&#39;, &#39;category.2&#39;, &#39;category.3&#39;),
+           sep = &#39; - &#39;) %&gt;%
+  
+  separate(col = location,
+           into = c(&#39;city&#39;, &#39;state&#39;),
+           sep = &#39;,&#39;) %&gt;%
+  
+  mutate(total.price = price * quantity) %&gt;%
+  
+  select(-...1,-gender) %&gt;%
+  
+  select(-ends_with(&#39;.id&#39;)) %&gt;%
+  
+  bind_cols(new_orderlines_joined %&gt;% select(order.id)) %&gt;%
+  
+  select(order.id, contains(&#39;order&#39;), contains(&#39;model&#39;), contains(&quot;category&quot;),
+         price, quantity, total.price,
+         everything()) %&gt;%
+  
+  rename(bikeshop = name) %&gt;%
+  set_names(names(.) %&gt;%  str_replace_all(&quot;\\.&quot;, &quot;_&quot;))
+
+
+sales_by_year &lt;- wrangled_tbl %&gt;%
+  
+  #Selecting order_date and total_price
+  select(order_date, total_price, state) %&gt;%
+  
+  #Creating a new column
+  mutate(year = year(order_date)) %&gt;%
+  
+  #Grouping by year and afterwards summarizing each year regardless of the location
+  #The summary is esentially sum of the total prices for the specific year for all locations.
+  group_by(year, state) %&gt;%
+  summarize(sales = sum(total_price)) %&gt;%
+  
+  #Add another column which basically presents the data in a nicer format
+  mutate(sales_text = scales::dollar(sales, big.mark = &quot;.&quot;, decimal.mark = &quot;,&quot;,
+                                     prefix = &quot;&quot;,
+                                     suffix = &#39;€&#39;))
+
+
+
+sales_by_year %&gt;%
+  
+  ggplot(aes(x = year, y = sales, fill = state)) +
+  geom_col() + # Run up to here to get a stacked bar plot
+  facet_wrap(~ state) +
+  
+  scale_y_continuous(labels = scales::dollar_format(big.mark = &quot;.&quot;, 
+                                                    decimal.mark = &quot;,&quot;, 
+                                                    prefix = &quot;&quot;, 
+                                                    suffix = &quot; €&quot;)) +
+  labs(
+    title = &quot;Revenue by year and state&quot;,
+    subtitle = &quot;Each product category has an upward trend&quot;,
+    fill = &quot;Main category&quot; # Changes the legend name
+  )</code></pre>
 <p><img src="journal_files/figure-html/unnamed-chunk-1-1.png" width="1440" /></p>
 </div>
-<div id="data-acquisition-2a-asdasdasdasdadasdadadasd" class="section level2">
-<h2><span class="header-section-number">0.2</span> Data Acquisition 2a) asdasdasdasdadasdadadasd</h2>
+<div id="data-acquisition-2a" class="section level2">
+<h2><span class="header-section-number">0.2</span> Data Acquisition 2a)</h2>
 <pre><code>
 library(jsonlite)
 library(glue)
@@ -440,11 +518,14 @@ accuweather_data_json &lt;- fromJSON(accuweather_data)
 forecast_hamburg &lt;- accuweather_data_json$DailyForecasts
 
 forecast_hamburg %&gt;% 
-  as_tibble()</code></pre>
+  as_tibble() %&gt;%
+  print.table()
+
+</code></pre>
 </div>
 <div id="data-acquisition-2b" class="section level2">
 <h2><span class="header-section-number">0.3</span> Data Acquisition 2b)</h2>
-<pre><code>library(RSQLite)
+<pre class="r"><code>library(RSQLite)
 library(tidyverse)
 library(httr)
 library(glue)
@@ -561,7 +642,59 @@ for (i in seq_along(bike_model_url_tbl$url)) {
 names(bike_model_prices_tbl)[1] &lt;- &quot;Bike Prices&quot;
 
 
-table_of_prices &lt;- bind_cols(bike_model_names_tbl,bike_model_prices_tbl)</code></pre>
+table_of_prices &lt;- bind_cols(bike_model_names_tbl,bike_model_prices_tbl)
+knitr::kable(table_of_prices[1:10, ], caption = &#39;Rosebike.com bicycle prices&#39;)</code></pre>
+<table>
+<caption>Rosebike.com bicycle prices</caption>
+<thead>
+<tr class="header">
+<th align="left">Bike Model</th>
+<th align="left">Bike Prices</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">GROUND CONTROL 1</td>
+<td align="left">€1,699.00</td>
+</tr>
+<tr class="even">
+<td align="left">GROUND CONTROL 2</td>
+<td align="left">€1,999.00</td>
+</tr>
+<tr class="odd">
+<td align="left">GROUND CONTROL 3</td>
+<td align="left">€2,599.00</td>
+</tr>
+<tr class="even">
+<td align="left">GROUND CONTROL 4</td>
+<td align="left">€3,299.00</td>
+</tr>
+<tr class="odd">
+<td align="left">ROOT MILLER 1</td>
+<td align="left">€1,999.00</td>
+</tr>
+<tr class="even">
+<td align="left">ROOT MILLER 2</td>
+<td align="left">€2,599.00</td>
+</tr>
+<tr class="odd">
+<td align="left">ROOT MILLER 3</td>
+<td align="left">€3,399.00</td>
+</tr>
+<tr class="even">
+<td align="left">PIKES PEAK 1</td>
+<td align="left">€3,099.00</td>
+</tr>
+<tr class="odd">
+<td align="left">PIKES PEAK 2</td>
+<td align="left">€3,599.00</td>
+</tr>
+<tr class="even">
+<td align="left">PIKES PEAK 3</td>
+<td align="left">€4,299.00</td>
+</tr>
+</tbody>
+</table>
 </div>
 <div id="data-wrangling-a" class="section level2">
 <h2><span class="header-section-number">0.4</span> Data Wrangling a)</h2>
@@ -639,10 +772,17 @@ pat_assignee_tbl &lt;- vroom(
 ) 
 
 
-# To choose the patents by corporations, we go to assignee and filter 
-# the type column keeping 2. This only gives us corporation names and their ids
 
-# USA CORPORATIONS WHICH HAVE FILED PATENTS AND THEIR ID&#39;S 
+
+
+
+# List the 10 US companies with the most assigned/granted patents.
+
+
+# To choose the patents by corporations, we go to assignee and filter 
+# the type column keeping 2. 
+
+# USA corporation names and their assignee IDs
 corporations_id_names &lt;- assignee_tbl %&gt;%
   select(id, type, organization) %&gt;%
   filter(type == 2) # This here makes sure they&#39;re from USA
@@ -650,8 +790,10 @@ corporations_id_names &lt;- assignee_tbl %&gt;%
 
 
 
-# Need to check which corporations from corp_id_names have values in pat_assigne.
-# This means that we check which corps from USA have been assigned a patent. 
+# Top companies in the world which have been assigned a patent. 
+# We can group by the assignee_id, which is unique to each corporation, 
+# and then simply count the number of patents for that corporation.
+
 
 top_patent_wrld &lt;- pat_assignee_tbl %&gt;%
   group_by(assignee_id) %&gt;%
@@ -662,15 +804,24 @@ top_patent_wrld &lt;- pat_assignee_tbl %&gt;%
   ungroup() %&gt;%
   arrange(desc(count)) %&gt;%
   rename(id = assignee_id) %&gt;%
-  head(100)
-                                 # Top companies in the world which
-                                 # filed the patents
+  head(100)           # Top 100 companies in the world which have been granted a patent.
+                                  
 
+# Top 100 companies in the world is reasonably high to cross reference with
+# U.S companies. To do this, a right_join by their unique id can be used.
 
 top_10_us &lt;- right_join(top_patent_wrld, corporations_id_names, by = &#39;id&#39;) %&gt;%
   head(10) %&gt;%
   select(count,organization) %&gt;%
-  print()</code></pre>
+  
+
+print(top_10_us$organization)
+
+
+
+
+
+</code></pre>
 </div>
 <div id="data-wrangling-b" class="section level2">
 <h2><span class="header-section-number">0.5</span> Data Wrangling b)</h2>
@@ -746,7 +897,7 @@ pat_assignee_tbl &lt;- vroom(                  # TBL for patetn-assigned comp.
 
 
 
-# Filter assignee.tsv data to get U.s Companies Names and IDs.
+# Filter assignee.tsv data to get U.S Companies Names and IDs.
 us_corp_filt &lt;- assignee_tbl %&gt;%
   filter(type == 2) %&gt;%
   select(id, organization) %&gt;%
@@ -759,8 +910,33 @@ issued_2019 &lt;- patent_tbl %&gt;%
   select(number) %&gt;%
   rename(patent_id = number)
   
+# Combine U.S corporation assignee numbers with companies that have 
+# been assigned a patent (from around the world). This gives patents by their ID filed by 
+# u.s companies. 
 
 dt1 &lt;- merge(us_corp_filt,pat_assignee_tbl,by=&quot;assignee_id&quot;)
+
+
+
+
+# some tests to see if we are getting good data.
+
+
+
+# santiy_check &lt;- dt1[!duplicated(dt1$patent_id), ] # We see that some patents repeat.
+# 
+# sanity_check2 &lt;- pat_assignee_tbl %&gt;%
+#   group_by(patent_id) %&gt;%
+#   summarize (
+#     count = n()
+#   )
+
+
+
+
+
+
+# Then combine the table of patents issued in the U.S for 201
 dt2 &lt;- merge(dt1, issued_2019, by = &quot;patent_id&quot;) %&gt;%
   group_by(organization) %&gt;%
   summarise(
@@ -782,7 +958,10 @@ dt4 &lt;- merge(dt3, issued_2019, by = &quot;patent_id&quot;) %&gt;%
     count = n()
   ) %&gt;%
   arrange(desc(count)) %&gt;%
-  head(10)</code></pre>
+  head(10)
+
+print(dt4)
+</code></pre>
 </div>
 <div id="data-wrangling-c" class="section level2">
 <h2><span class="header-section-number">0.6</span> Data Wrangling c)</h2>
@@ -879,60 +1058,159 @@ pat_assignee_tbl &lt;- vroom(                  # TBL for patetn-assigned comp.
   delim      = &quot;\t&quot;, 
   col_types  = col_types3,
   na         = c(&quot;&quot;, &quot;NA&quot;, &quot;NULL&quot;)
-) 
+)
+  
+  
+  # Find the names of top 10 us companies 
 
+corporations_id_names &lt;- assignee_tbl %&gt;%
+  select(id, type, organization) %&gt;%
+  filter(type == 2) %&gt;%
+  rename(assignee_id = id)# This here makes sure they&#39;re from USA 
+
+
+
+
+# Top companies in the world which have been assigned a patent. 
+# We can group by the assignee_id, which is unique to each corporation, 
+# and then simply count the number of patents for that corporation.
+
+
+top_patent_wrld &lt;- pat_assignee_tbl %&gt;%
+  group_by(assignee_id) %&gt;%
+  summarize(
+    count = n()
+    
+  ) %&gt;%
+  ungroup() %&gt;%
+  arrange(desc(count)) %&gt;%
+  
+  head(100)           # Top 100 companies in the world which have been granted a patent.
+
+
+# Top 100 companies in the world is reasonably high to cross reference with
+# U.S companies. To do this, a right_join by their unique id can be used.
+
+top_10_us &lt;- right_join(top_patent_wrld, corporations_id_names, by = &#39;assignee_id&#39;) %&gt;%
+  head(10) %&gt;%
+  select(assignee_id)
 
 
 uspc_tbl_filtered &lt;- uspc_tbl %&gt;%
   select(mainclass_id, patent_id, sequence) %&gt;%
   filter(sequence == 0) %&gt;%
-  left_join(pat_assignee_tbl, by = &#39;patent_id&#39;)
-
-uspc_tbl_filtered2 &lt;- uspc_tbl_filtered %&gt;%
-  select(everything()) %&gt;%
-  distinct(patent_id)
-  
-
-num &lt;- unique(uspc_tbl_filtered$patent_id)
-
-# Check if the output table after merge resutlts in 5066573 observations. 
-# There are 5207318 NON unique observations but after filtering by distinct func.
-# there are 5066573 unique ones (patent_ids) which we want in one table with everything
-# elese from the uspc_table
-# THIS WORKS :D 
-santiy_check &lt;- uspc_tbl_filtered[!duplicated(uspc_tbl_filtered$patent_id), ]
-
-
-# Top 10 companies world wide. 
-id_mainclass_count_tbl &lt;- santiy_check %&gt;%
-  select(assignee_id, patent_id, mainclass_id) %&gt;%
-  group_by(assignee_id) %&gt;%
-  summarise(
-    count = n()
-  ) %&gt;%
+  left_join(pat_assignee_tbl, by = &#39;patent_id&#39;) %&gt;%
+  merge(top_10_us, by = &#39;assignee_id&#39;) %&gt;%
+  group_by(mainclass_id) %&gt;%
+  summarize(
+    count = n() 
+  )%&gt;%
   arrange(desc(count)) %&gt;%
-  drop_na() %&gt;%
   head(10)
 
 
-# 1. Match or Extract the top 10 companies in the world with the sanity check table.
-# 2. If we match, then group by assignee ID
-# 3. Make a new col, that is a list of mainclass IDs for the company
 
 
-result &lt;- left_join(id_mainclass_count_tbl, santiy_check) %&gt;%
-  select(assignee_id, mainclass_id, patent_id) %&gt;%
-  group_by(mainclass_id) %&gt;%
-  summarize(
-    
-    count = n()
-  ) %&gt;%
-  arrange(desc(count)) %&gt;%
-  head(5)
-
-result$mainclass_id
 
 </code></pre>
+</div>
+<div id="data-visualization-a" class="section level2">
+<h2><span class="header-section-number">0.7</span> Data Visualization a)</h2>
+<pre class="r"><code>library(tidyverse)
+library(dplyr)
+library(lubridate)
+library(ggplot2)
+library(scales)
+
+
+
+covid_data_tbl &lt;- read_csv(&quot;https://opendata.ecdc.europa.eu/covid19/casedistribution/csv&quot;)
+covid_data_tbl &lt;- covid_data_tbl[order(as.Date(covid_data_tbl$dateRep, format=&quot;%d/%m/%Y&quot;)),]
+covid_data_tbl$cases &lt;- abs(covid_data_tbl$cases) # no negative cases :)
+
+
+covid_data_tbl2 &lt;- covid_data_tbl %&gt;%
+  filter(countriesAndTerritories %in% c(&#39;Spain&#39;, &#39;United_Kingdom&#39;, &#39;France&#39;, &#39;Germany&#39;,&#39;United_States_of_America&#39;)) %&gt;%
+  select(dateRep, countriesAndTerritories, cases) %&gt;%
+  group_by(countriesAndTerritories) %&gt;%
+  mutate(cumulativeCases = cumsum(cases))  %&gt;%
+  select(dateRep, countriesAndTerritories, cumulativeCases) %&gt;%
+  rename(countries = countriesAndTerritories)
+
+
+# Plotting the values 
+ticks = c(&quot;Dec&quot;,&quot;Jan&quot;, &#39;Feb&#39;,&#39;March&#39;, &#39;April&#39;, &#39;May&#39;, &#39;June&#39;,&#39;July&#39;,
+          &#39;Aug&#39;,&#39;Sept&#39;,&#39;Oct&#39;,&#39;Nov&#39;,&#39;Dec&#39;)
+
+
+y_ticks = seq(0,max(covid_data_tbl2$cumulativeCases),1250000)
+
+covid_data_tbl2 %&gt;%
+  ggplot(aes(x = as.POSIXct(dateRep, format = &#39;%d/%m/%Y&#39;), y = cumulativeCases)) +
+  geom_line(aes(color = countries), size = 1) +
+  labs(x = &#39;Year 2020&#39;, y=&#39;Cumulative Cases&#39;, fill = &#39;Countries&#39;) +
+  scale_x_datetime(date_breaks = &#39;month&#39;, labels = label_date_short()) +
+  scale_y_continuous(breaks = c(y_ticks))</code></pre>
+<p><img src="journal_files/figure-html/unnamed-chunk-3-1.png" width="1440" /></p>
+</div>
+<div id="data-visualization-b" class="section level2">
+<h2><span class="header-section-number">0.8</span> Data Visualization b)</h2>
+<pre class="r"><code>library(tidyverse)
+library(dplyr)
+library(lubridate)
+library(ggplot2)
+
+
+theme_set(
+  theme_dark()
+)
+
+covid_data_tbl &lt;- read_csv(&quot;https://opendata.ecdc.europa.eu/covid19/casedistribution/csv&quot;)
+covid_data_tbl$cases &lt;- abs(covid_data_tbl$cases) # no negative cases :)
+covid_data_tbl$deaths &lt;- abs(covid_data_tbl$deaths) # no negative deaths :)
+
+world &lt;- map_data(&#39;world&#39;) %&gt;%
+  rename(countries = region) %&gt;%
+  dplyr::select(countries,long,lat,group) 
+  
+
+
+covid_data_tbl &lt;- covid_data_tbl %&gt;%
+  mutate(across(countriesAndTerritories, str_replace_all, &quot;_&quot;, &quot; &quot;)) %&gt;%
+  mutate(countriesAndTerritories = case_when(
+    
+    countriesAndTerritories == &quot;United Kingdom&quot; ~ &quot;UK&quot;,
+    countriesAndTerritories == &quot;United States of America&quot; ~ &quot;USA&quot;,
+    countriesAndTerritories == &quot;Czechia&quot; ~ &quot;Czech Republic&quot;,
+    TRUE ~ countriesAndTerritories
+    
+  ))
+
+population &lt;- covid_data_tbl %&gt;%
+  group_by(countriesAndTerritories) %&gt;%
+  dplyr::select(countriesAndTerritories, popData2019) %&gt;%
+  unique() %&gt;%
+  rename(countries = countriesAndTerritories)
+  
+
+mortality_rate_tbl &lt;- covid_data_tbl %&gt;%
+  group_by(countriesAndTerritories) %&gt;%
+  summarise( 
+    total_deaths = sum(deaths)
+    ) %&gt;%
+  rename(countries = countriesAndTerritories)
+
+
+useful_map &lt;- left_join(population,mortality_rate_tbl, by = &quot;countries&quot;)
+
+final_tbl &lt;- left_join(world, useful_map, by = &#39;countries&#39;) %&gt;%
+  mutate(mort_rate = total_deaths / popData2019)
+
+#plotting the values
+ggplot(final_tbl, aes(long, lat, group = group))+
+  geom_polygon(aes(fill = mort_rate), color = &quot;white&quot;)+
+  scale_fill_gradient(low = &#39;orange&#39;, high = &#39;red&#39;, na.value = &#39;white&#39;)</code></pre>
+<p><img src="journal_files/figure-html/unnamed-chunk-4-1.png" width="1440" /></p>
 </div>
 
 
