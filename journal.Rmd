@@ -24,7 +24,7 @@ Last compiled: `r Sys.Date()`
 
 ## Introduction to tidyverse challenge
 
-```{r, include=TRUE, results='asis'}
+```{r, echo = TRUE}
 # 1.0 Load libraries ----
 
 library('tidyverse')
