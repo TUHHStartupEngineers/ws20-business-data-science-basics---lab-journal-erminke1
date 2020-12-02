@@ -386,10 +386,10 @@ top_patent_wrld <- pat_assignee_tbl %>%
 
 top_10_us <- right_join(top_patent_wrld, corporations_id_names, by = 'id') %>%
   head(10) %>%
-  select(count,organization) %>%
+  select(count,organization)
   
 
-print(top_10_us$organization)
+knitr::kable(top_10_us$organization, col.names = 'Company name', caption = 'Top 10 US companies by patent count')
 
 
 
