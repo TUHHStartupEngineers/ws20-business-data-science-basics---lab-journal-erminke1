@@ -495,12 +495,12 @@ sales_by_year %&gt;%
 </div>
 <div id="data-acquisition-2a" class="section level2">
 <h2><span class="header-section-number">0.2</span> Data Acquisition 2a)</h2>
-<pre><code>
-library(jsonlite)
+<pre class="r"><code>library(jsonlite)
 library(glue)
 library(httr)
 library(rstudioapi)
 library(tidyverse)
+library(jsonlite)
 
 # Looking up a location on accuweather.com for Hamburg, it can be found that
 # ... the location code for Hamburg is 178556. We need that for the data
@@ -517,14 +517,18 @@ accuweather_data &lt;- content(raw_accuweather_data, as = &#39;text&#39;)
 accuweather_data_json &lt;- fromJSON(accuweather_data)
 forecast_hamburg &lt;- accuweather_data_json$DailyForecasts
 
-forecast_hamburg %&gt;% 
-  as_tibble() %&gt;%
-  print.table()
 
-</code></pre>
+forecast_hamburg %&gt;% 
+  as_tibble() </code></pre>
 </div>
+<div id="a-tibble-1-x-8" class="section level1">
+<h1><span class="header-section-number">1</span> A tibble: 1 x 8</h1>
+<p>Date EpochDate Temperature$Min~ <span class="math display">\[Unit \]</span>UnitType <span class="math inline">\(Maximum\)</span>Value <span class="math display">\[Unit
+  &lt;chr&gt;     &lt;int&gt;            &lt;dbl&gt; &lt;chr&gt;       &lt;int&gt;          &lt;dbl&gt; &lt;chr&gt; 
+1 2020~    1.61e9               30 F              18             39 F     
+# ... with 10 more variables: \]</span>UnitType <int>, Day$Icon <int>, # $IconPhrase <chr>, <span class="math inline">\(HasPrecipitation &lt;lgl&gt;, Night\)</span>Icon <int>, # $IconPhrase <chr>, $HasPrecipitation <lgl>, Sources <list>, # MobileLink <chr>, Link <chr></p>
 <div id="data-acquisition-2b" class="section level2">
-<h2><span class="header-section-number">0.3</span> Data Acquisition 2b)</h2>
+<h2><span class="header-section-number">1.1</span> Data Acquisition 2b)</h2>
 <pre class="r"><code>library(RSQLite)
 library(tidyverse)
 library(httr)
@@ -580,7 +584,7 @@ get_bike_names &lt;- function(url) {
     html_nodes(css = &quot;.catalog-category-model__title&quot;) %&gt;%
     html_text() %&gt;%
     # Convert vector to tibble
-    as.tibble()
+    as_tibble()
     
   
 }
@@ -593,7 +597,7 @@ get_bike_prices &lt;- function(url) {
     html_nodes(css = &quot;.product-tile-price__current-value&quot;) %&gt;%
     html_text() %&gt;%
     # Convert vector to tibble
-    as.tibble()
+    as_tibble()
   
 }
 
@@ -605,6 +609,10 @@ bike_family_url_tbl &lt;- get_bike_family_urls(base_url)
 bike_family_url_tbl &lt;- bike_family_url_tbl %&gt;%
   slice(1:3) # Pick 3 categories
 
+
+
+
+# Create a table with bike model URLS
 bike_model_url_tbl &lt;- tibble()
 
 for (i in seq_along(bike_family_url_tbl$url)) {
@@ -615,7 +623,7 @@ for (i in seq_along(bike_family_url_tbl$url)) {
 }
 
 
-
+# Create a table with bike model names
 bike_model_names_tbl &lt;- tibble()
 
 for (i in seq_along(bike_model_url_tbl$url)) {
@@ -625,12 +633,12 @@ for (i in seq_along(bike_model_url_tbl$url)) {
   
 }
 
+# Rename cols
 names(bike_model_names_tbl)[1] &lt;- &quot;Bike Model&quot;
 
 
 
-
-
+# Create a table with bike prices
 bike_model_prices_tbl &lt;- tibble()
 
 for (i in seq_along(bike_model_url_tbl$url)) {
@@ -639,10 +647,15 @@ for (i in seq_along(bike_model_url_tbl$url)) {
   bike_model_prices_tbl &lt;- bind_rows(bike_model_prices_tbl, get_bike_prices(web))
 
 }
+
+# Rename cols
 names(bike_model_prices_tbl)[1] &lt;- &quot;Bike Prices&quot;
 
-
+# Join into one table
 table_of_prices &lt;- bind_cols(bike_model_names_tbl,bike_model_prices_tbl)
+temp &lt;- tempfile()
+write_rds(table_of_prices, temp)
+
 knitr::kable(table_of_prices[1:10, ], caption = &#39;Rosebike.com bicycle prices&#39;)</code></pre>
 <table>
 <caption>Rosebike.com bicycle prices</caption>
@@ -697,10 +710,8 @@ knitr::kable(table_of_prices[1:10, ], caption = &#39;Rosebike.com bicycle prices
 </table>
 </div>
 <div id="data-wrangling-a" class="section level2">
-<h2><span class="header-section-number">0.4</span> Data Wrangling a)</h2>
-<pre><code>
-
-library(vroom)
+<h2><span class="header-section-number">1.2</span> Data Wrangling a)</h2>
+<pre class="r"><code>library(vroom)
 library(RSQLite)
 library(tidyverse)
 library(httr)
@@ -812,20 +823,18 @@ top_patent_wrld &lt;- pat_assignee_tbl %&gt;%
 
 top_10_us &lt;- right_join(top_patent_wrld, corporations_id_names, by = &#39;id&#39;) %&gt;%
   head(10) %&gt;%
-  select(count,organization) %&gt;%
+  select(count,organization)
   
+temp &lt;- tempfile()
+write_rds(top_10_us, temp)</code></pre>
+<pre class="r"><code>read_rds(temp2)
+knitr::kable(top_10_us$organization, col.names = &#39;Company name&#39;, caption = &#39;Top 10 US companies by patent count&#39;)</code></pre>
+<pre><code>
+## Data Wrangling b)
 
-print(top_10_us$organization)
 
-
-
-
-
-</code></pre>
-</div>
-<div id="data-wrangling-b" class="section level2">
-<h2><span class="header-section-number">0.5</span> Data Wrangling b)</h2>
-<pre><code>library(vroom)
+```r
+library(vroom)
 library(RSQLite)
 library(tidyverse)
 library(httr)
@@ -917,25 +926,6 @@ issued_2019 &lt;- patent_tbl %&gt;%
 dt1 &lt;- merge(us_corp_filt,pat_assignee_tbl,by=&quot;assignee_id&quot;)
 
 
-
-
-# some tests to see if we are getting good data.
-
-
-
-# santiy_check &lt;- dt1[!duplicated(dt1$patent_id), ] # We see that some patents repeat.
-# 
-# sanity_check2 &lt;- pat_assignee_tbl %&gt;%
-#   group_by(patent_id) %&gt;%
-#   summarize (
-#     count = n()
-#   )
-
-
-
-
-
-
 # Then combine the table of patents issued in the U.S for 201
 dt2 &lt;- merge(dt1, issued_2019, by = &quot;patent_id&quot;) %&gt;%
   group_by(organization) %&gt;%
@@ -959,12 +949,14 @@ dt4 &lt;- merge(dt3, issued_2019, by = &quot;patent_id&quot;) %&gt;%
   ) %&gt;%
   arrange(desc(count)) %&gt;%
   head(10)
-
-print(dt4)
-</code></pre>
+  
+temp2 &lt;- tempfile()
+write_rds(dt4,temp)</code></pre>
+<pre class="r"><code>read_rds(temp2)
+print(dt4)</code></pre>
 </div>
 <div id="data-wrangling-c" class="section level2">
-<h2><span class="header-section-number">0.6</span> Data Wrangling c)</h2>
+<h2><span class="header-section-number">1.3</span> Data Wrangling c)</h2>
 <pre><code>
 library(vroom)
 library(RSQLite)
@@ -1115,7 +1107,7 @@ uspc_tbl_filtered &lt;- uspc_tbl %&gt;%
 </code></pre>
 </div>
 <div id="data-visualization-a" class="section level2">
-<h2><span class="header-section-number">0.7</span> Data Visualization a)</h2>
+<h2><span class="header-section-number">1.4</span> Data Visualization a)</h2>
 <pre class="r"><code>library(tidyverse)
 library(dplyr)
 library(lubridate)
@@ -1151,10 +1143,10 @@ covid_data_tbl2 %&gt;%
   labs(x = &#39;Year 2020&#39;, y=&#39;Cumulative Cases&#39;, fill = &#39;Countries&#39;) +
   scale_x_datetime(date_breaks = &#39;month&#39;, labels = label_date_short()) +
   scale_y_continuous(breaks = c(y_ticks))</code></pre>
-<p><img src="journal_files/figure-html/unnamed-chunk-3-1.png" width="1440" /></p>
+<p><img src="journal_files/figure-html/unnamed-chunk-8-1.png" width="1440" /></p>
 </div>
 <div id="data-visualization-b" class="section level2">
-<h2><span class="header-section-number">0.8</span> Data Visualization b)</h2>
+<h2><span class="header-section-number">1.5</span> Data Visualization b)</h2>
 <pre class="r"><code>library(tidyverse)
 library(dplyr)
 library(lubridate)
@@ -1210,7 +1202,8 @@ final_tbl &lt;- left_join(world, useful_map, by = &#39;countries&#39;) %&gt;%
 ggplot(final_tbl, aes(long, lat, group = group))+
   geom_polygon(aes(fill = mort_rate), color = &quot;white&quot;)+
   scale_fill_gradient(low = &#39;orange&#39;, high = &#39;red&#39;, na.value = &#39;white&#39;)</code></pre>
-<p><img src="journal_files/figure-html/unnamed-chunk-4-1.png" width="1440" /></p>
+<p><img src="journal_files/figure-html/unnamed-chunk-9-1.png" width="1440" /></p>
+</div>
 </div>
 
 
