@@ -518,17 +518,11 @@ accuweather_data_json &lt;- fromJSON(accuweather_data)
 forecast_hamburg &lt;- accuweather_data_json$DailyForecasts
 
 
-forecast_hamburg %&gt;% 
+forecast_hamburg &lt;- forecast_hamburg %&gt;% 
   as_tibble() </code></pre>
 </div>
-<div id="a-tibble-1-x-8" class="section level1">
-<h1><span class="header-section-number">1</span> A tibble: 1 x 8</h1>
-<p>Date EpochDate Temperature$Min~ <span class="math display">\[Unit \]</span>UnitType <span class="math inline">\(Maximum\)</span>Value <span class="math display">\[Unit
-  &lt;chr&gt;     &lt;int&gt;            &lt;dbl&gt; &lt;chr&gt;       &lt;int&gt;          &lt;dbl&gt; &lt;chr&gt; 
-1 2020~    1.61e9               30 F              18             39 F     
-# ... with 10 more variables: \]</span>UnitType <int>, Day$Icon <int>, # $IconPhrase <chr>, <span class="math inline">\(HasPrecipitation &lt;lgl&gt;, Night\)</span>Icon <int>, # $IconPhrase <chr>, $HasPrecipitation <lgl>, Sources <list>, # MobileLink <chr>, Link <chr></p>
 <div id="data-acquisition-2b" class="section level2">
-<h2><span class="header-section-number">1.1</span> Data Acquisition 2b)</h2>
+<h2><span class="header-section-number">0.3</span> Data Acquisition 2b)</h2>
 <pre class="r"><code>library(RSQLite)
 library(tidyverse)
 library(httr)
@@ -710,7 +704,7 @@ knitr::kable(table_of_prices[1:10, ], caption = &#39;Rosebike.com bicycle prices
 </table>
 </div>
 <div id="data-wrangling-a" class="section level2">
-<h2><span class="header-section-number">1.2</span> Data Wrangling a)</h2>
+<h2><span class="header-section-number">0.4</span> Data Wrangling a)</h2>
 <pre class="r"><code>library(vroom)
 library(RSQLite)
 library(tidyverse)
@@ -827,14 +821,12 @@ top_10_us &lt;- right_join(top_patent_wrld, corporations_id_names, by = &#39;id&
   
 temp &lt;- tempfile()
 write_rds(top_10_us, temp)</code></pre>
-<pre class="r"><code>read_rds(temp2)
-knitr::kable(top_10_us$organization, col.names = &#39;Company name&#39;, caption = &#39;Top 10 US companies by patent count&#39;)</code></pre>
-<pre><code>
-## Data Wrangling b)
-
-
-```r
-library(vroom)
+</div>
+<div id="r-echo-true-read_rdstemp2-knitrkabletop_10_usorganization-col.names-company-name-caption-top-10-us-companies-by-patent-count" class="section level1">
+<h1><span class="header-section-number">1</span> <code>{r, echo = TRUE} # read_rds(temp2) # knitr::kable(top_10_us$organization, col.names = 'Company name', caption = 'Top 10 US companies by patent count') #</code></h1>
+<div id="data-wrangling-b" class="section level2">
+<h2><span class="header-section-number">1.1</span> Data Wrangling b)</h2>
+<pre class="r"><code>library(vroom)
 library(RSQLite)
 library(tidyverse)
 library(httr)
@@ -951,12 +943,12 @@ dt4 &lt;- merge(dt3, issued_2019, by = &quot;patent_id&quot;) %&gt;%
   head(10)
   
 temp2 &lt;- tempfile()
-write_rds(dt4,temp)</code></pre>
-<pre class="r"><code>read_rds(temp2)
-print(dt4)</code></pre>
+write_rds(dt4,temp2)</code></pre>
+<pre><code>read_rds(temp2)
+temp2</code></pre>
 </div>
 <div id="data-wrangling-c" class="section level2">
-<h2><span class="header-section-number">1.3</span> Data Wrangling c)</h2>
+<h2><span class="header-section-number">1.2</span> Data Wrangling c)</h2>
 <pre><code>
 library(vroom)
 library(RSQLite)
@@ -1107,7 +1099,7 @@ uspc_tbl_filtered &lt;- uspc_tbl %&gt;%
 </code></pre>
 </div>
 <div id="data-visualization-a" class="section level2">
-<h2><span class="header-section-number">1.4</span> Data Visualization a)</h2>
+<h2><span class="header-section-number">1.3</span> Data Visualization a)</h2>
 <pre class="r"><code>library(tidyverse)
 library(dplyr)
 library(lubridate)
@@ -1143,10 +1135,10 @@ covid_data_tbl2 %&gt;%
   labs(x = &#39;Year 2020&#39;, y=&#39;Cumulative Cases&#39;, fill = &#39;Countries&#39;) +
   scale_x_datetime(date_breaks = &#39;month&#39;, labels = label_date_short()) +
   scale_y_continuous(breaks = c(y_ticks))</code></pre>
-<p><img src="journal_files/figure-html/unnamed-chunk-8-1.png" width="1440" /></p>
+<p><img src="journal_files/figure-html/unnamed-chunk-6-1.png" width="1440" /></p>
 </div>
 <div id="data-visualization-b" class="section level2">
-<h2><span class="header-section-number">1.5</span> Data Visualization b)</h2>
+<h2><span class="header-section-number">1.4</span> Data Visualization b)</h2>
 <pre class="r"><code>library(tidyverse)
 library(dplyr)
 library(lubridate)
@@ -1202,7 +1194,7 @@ final_tbl &lt;- left_join(world, useful_map, by = &#39;countries&#39;) %&gt;%
 ggplot(final_tbl, aes(long, lat, group = group))+
   geom_polygon(aes(fill = mort_rate), color = &quot;white&quot;)+
   scale_fill_gradient(low = &#39;orange&#39;, high = &#39;red&#39;, na.value = &#39;white&#39;)</code></pre>
-<p><img src="journal_files/figure-html/unnamed-chunk-9-1.png" width="1440" /></p>
+<p><img src="journal_files/figure-html/unnamed-chunk-7-1.png" width="1440" /></p>
 </div>
 </div>
 

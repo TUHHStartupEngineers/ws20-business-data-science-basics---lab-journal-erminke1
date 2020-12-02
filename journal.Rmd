@@ -133,7 +133,7 @@ accuweather_data_json <- fromJSON(accuweather_data)
 forecast_hamburg <- accuweather_data_json$DailyForecasts
 
 
-forecast_hamburg %>% 
+forecast_hamburg <- forecast_hamburg %>% 
   as_tibble() 
 
 
@@ -403,19 +403,18 @@ write_rds(top_10_us, temp)
 ```
 
 
-```{r, echo = TRUE, eval=FALSE}
-read_rds(temp2)
-knitr::kable(top_10_us$organization, col.names = 'Company name', caption = 'Top 10 US companies by patent count')
-```
+# ```{r, echo = TRUE}
+# read_rds(temp2)
+# knitr::kable(top_10_us$organization, col.names = 'Company name', caption = 'Top 10 US companies by patent count')
+# ```
 
 
 
 
-```
 
 ## Data Wrangling b)
 
-``````{r, echo = TRUE, eval=FALSE}
+```{r, echo = TRUE, eval=FALSE}
 library(vroom)
 library(RSQLite)
 library(tidyverse)
@@ -533,13 +532,13 @@ dt4 <- merge(dt3, issued_2019, by = "patent_id") %>%
   head(10)
   
 temp2 <- tempfile()
-write_rds(dt4,temp)
+write_rds(dt4,temp2)
 ```
   
   
-```{r, echo = TRUE, eval=FALSE}
+```
 read_rds(temp2)
-print(dt4)
+temp2
 ```
 
 
