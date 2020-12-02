@@ -202,7 +202,7 @@ get_bike_names <- function(url) {
     html_nodes(css = ".catalog-category-model__title") %>%
     html_text() %>%
     # Convert vector to tibble
-    as.tibble()
+    as_tibble()
     
   
 }
@@ -215,7 +215,7 @@ get_bike_prices <- function(url) {
     html_nodes(css = ".product-tile-price__current-value") %>%
     html_text() %>%
     # Convert vector to tibble
-    as.tibble()
+    as_tibble()
   
 }
 
@@ -266,6 +266,7 @@ names(bike_model_prices_tbl)[1] <- "Bike Prices"
 
 table_of_prices <- bind_cols(bike_model_names_tbl,bike_model_prices_tbl)
 knitr::kable(table_of_prices[1:10, ], caption = 'Rosebike.com bicycle prices')
+
 ```
 
 
@@ -389,7 +390,6 @@ top_10_us <- right_join(top_patent_wrld, corporations_id_names, by = 'id') %>%
   
 
 print(top_10_us$organization)
-
 
 
 
