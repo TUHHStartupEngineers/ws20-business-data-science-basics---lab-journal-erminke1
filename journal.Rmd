@@ -108,7 +108,7 @@ sales_by_year %>%
 
 ## Data Acquisition 2a)
 
-```
+```{r, echo = TRUE}
 
 library(jsonlite)
 library(glue)
