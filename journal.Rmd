@@ -272,8 +272,6 @@ names(bike_model_prices_tbl)[1] <- "Bike Prices"
 
 # Join into one table
 table_of_prices <- bind_cols(bike_model_names_tbl,bike_model_prices_tbl)
-temp <- tempfile()
-write_rds(table_of_prices, temp)
 
 knitr::kable(table_of_prices[1:10, ], caption = 'Rosebike.com bicycle prices')
 
@@ -396,14 +394,17 @@ top_patent_wrld <- pat_assignee_tbl %>%
 
 top_10_us <- right_join(top_patent_wrld, corporations_id_names, by = 'id') %>%
   head(10) %>%
-  select(count,organization)
+  select(organization)
   
-temp <- tempfile()
+
+temp = "C:/Users/Ermin Kevric/Documents/GitHub/ws20-business-data-science-basics---lab-journal-erminke1/top10.rds"
 write_rds(top_10_us, temp)
 ```
 
 
-
+```{r, echo = TRUE}
+read_rds("C:/Users/Ermin Kevric/Documents/GitHub/ws20-business-data-science-basics---lab-journal-erminke1/top10.rds")
+```
 
 
 
@@ -527,22 +528,22 @@ dt4 <- merge(dt3, issued_2019, by = "patent_id") %>%
   ) %>%
   arrange(desc(count)) %>%
   head(10)
-  
-temp2 <- tempfile()
-write_rds(dt4,temp2)
+
+memory.limit(size = 6000)
+temp2 = "C:/Users/Ermin Kevric/Documents/GitHub/ws20-business-data-science-basics---lab-journal-erminke1/top102019.rds"
+write_rds(dt4, temp2)
 ```
   
   
-```
-read_rds(temp2)
-temp2
+```{r, echo = TRUE}
+read_rds("C:/Users/Ermin Kevric/Documents/GitHub/ws20-business-data-science-basics---lab-journal-erminke1/top102019.rds")
 ```
 
 
 
 ## Data Wrangling c)
 
-```
+```{r, echo = TRUE, eval=FALSE}
 
 library(vroom)
 library(RSQLite)
@@ -684,14 +685,21 @@ uspc_tbl_filtered <- uspc_tbl %>%
     count = n() 
   )%>%
   arrange(desc(count)) %>%
-  head(10)
+  head(10) %>%
+  select(mainclass_id)
 
-
-
-
-
-
+memory.limit(size = 6000)
+temp3 = "C:/Users/Ermin Kevric/Documents/GitHub/ws20-business-data-science-basics---lab-journal-erminke1/data3.rds"
+write_rds(uspc_tbl_filtered, temp3)
+  
 ```
+
+
+
+```{r, echo = TRUE}
+read_rds("C:/Users/Ermin Kevric/Documents/GitHub/ws20-business-data-science-basics---lab-journal-erminke1/data3.rds")
+```
+
 
 ## Data Visualization a)
 

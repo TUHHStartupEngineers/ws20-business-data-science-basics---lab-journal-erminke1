@@ -647,8 +647,6 @@ names(bike_model_prices_tbl)[1] &lt;- &quot;Bike Prices&quot;
 
 # Join into one table
 table_of_prices &lt;- bind_cols(bike_model_names_tbl,bike_model_prices_tbl)
-temp &lt;- tempfile()
-write_rds(table_of_prices, temp)
 
 knitr::kable(table_of_prices[1:10, ], caption = &#39;Rosebike.com bicycle prices&#39;)</code></pre>
 <table>
@@ -817,10 +815,25 @@ top_patent_wrld &lt;- pat_assignee_tbl %&gt;%
 
 top_10_us &lt;- right_join(top_patent_wrld, corporations_id_names, by = &#39;id&#39;) %&gt;%
   head(10) %&gt;%
-  select(count,organization)
+  select(organization)
   
-temp &lt;- tempfile()
+
+temp = &quot;C:/Users/Ermin Kevric/Documents/GitHub/ws20-business-data-science-basics---lab-journal-erminke1/top10.rds&quot;
 write_rds(top_10_us, temp)</code></pre>
+<pre class="r"><code>read_rds(&quot;C:/Users/Ermin Kevric/Documents/GitHub/ws20-business-data-science-basics---lab-journal-erminke1/top10.rds&quot;)</code></pre>
+<pre><code>## # A tibble: 10 x 1
+##    organization                               
+##    &lt;chr&gt;                                      
+##  1 International Business Machines Corporation
+##  2 General Electric Company                   
+##  3 Intel Corporation                          
+##  4 Hewlett-Packard Development Company, L.P.  
+##  5 Microsoft Corporation                      
+##  6 Micron Technology, Inc.                    
+##  7 QUALCOMM Incorporated                      
+##  8 Texas Instruments Incorporated             
+##  9 Xerox Corporation                          
+## 10 Apple Inc.</code></pre>
 </div>
 <div id="data-wrangling-b" class="section level2">
 <h2><span class="header-section-number">0.5</span> Data Wrangling b)</h2>
@@ -939,16 +952,28 @@ dt4 &lt;- merge(dt3, issued_2019, by = &quot;patent_id&quot;) %&gt;%
   ) %&gt;%
   arrange(desc(count)) %&gt;%
   head(10)
-  
-temp2 &lt;- tempfile()
-write_rds(dt4,temp2)</code></pre>
-<pre><code>read_rds(temp2)
-temp2</code></pre>
+
+memory.limit(size = 6000)
+temp2 = &quot;C:/Users/Ermin Kevric/Documents/GitHub/ws20-business-data-science-basics---lab-journal-erminke1/top102019.rds&quot;
+write_rds(dt4, temp2)</code></pre>
+<pre class="r"><code>read_rds(&quot;C:/Users/Ermin Kevric/Documents/GitHub/ws20-business-data-science-basics---lab-journal-erminke1/top102019.rds&quot;)</code></pre>
+<pre><code>## # A tibble: 10 x 2
+##    organization                                count
+##    &lt;chr&gt;                                       &lt;int&gt;
+##  1 International Business Machines Corporation  9265
+##  2 Samsung Electronics Co., Ltd.                7205
+##  3 Canon Kabushiki Kaisha                       3595
+##  4 Intel Corporation                            3526
+##  5 LG Electronics Inc.                          3314
+##  6 Microsoft Technology Licensing, LLC          3106
+##  7 Apple Inc.                                   2817
+##  8 Ford Global Technologies, LLC                2624
+##  9 Amazon Technologies, Inc.                    2533
+## 10 Huawei Technologies Co., Ltd.                2454</code></pre>
 </div>
 <div id="data-wrangling-c" class="section level2">
 <h2><span class="header-section-number">0.6</span> Data Wrangling c)</h2>
-<pre><code>
-library(vroom)
+<pre class="r"><code>library(vroom)
 library(RSQLite)
 library(tidyverse)
 library(httr)
@@ -1088,13 +1113,26 @@ uspc_tbl_filtered &lt;- uspc_tbl %&gt;%
     count = n() 
   )%&gt;%
   arrange(desc(count)) %&gt;%
-  head(10)
+  head(10) %&gt;%
+  select(mainclass_id)
 
-
-
-
-
-</code></pre>
+memory.limit(size = 6000)
+temp3 = &quot;C:/Users/Ermin Kevric/Documents/GitHub/ws20-business-data-science-basics---lab-journal-erminke1/data3.rds&quot;
+write_rds(uspc_tbl_filtered, temp3)</code></pre>
+<pre class="r"><code>read_rds(&quot;C:/Users/Ermin Kevric/Documents/GitHub/ws20-business-data-science-basics---lab-journal-erminke1/data3.rds&quot;)</code></pre>
+<pre><code>## # A tibble: 10 x 1
+##    mainclass_id
+##    &lt;chr&gt;       
+##  1 257         
+##  2 438         
+##  3 707         
+##  4 709         
+##  5 365         
+##  6 370         
+##  7 711         
+##  8 395         
+##  9 345         
+## 10 713</code></pre>
 </div>
 <div id="data-visualization-a" class="section level2">
 <h2><span class="header-section-number">0.7</span> Data Visualization a)</h2>
@@ -1133,7 +1171,7 @@ covid_data_tbl2 %&gt;%
   labs(x = &#39;Year 2020&#39;, y=&#39;Cumulative Cases&#39;, fill = &#39;Countries&#39;) +
   scale_x_datetime(date_breaks = &#39;month&#39;, labels = label_date_short()) +
   scale_y_continuous(breaks = c(y_ticks))</code></pre>
-<p><img src="journal_files/figure-html/unnamed-chunk-6-1.png" width="1440" /></p>
+<p><img src="journal_files/figure-html/unnamed-chunk-10-1.png" width="1440" /></p>
 </div>
 <div id="data-visualization-b" class="section level2">
 <h2><span class="header-section-number">0.8</span> Data Visualization b)</h2>
@@ -1192,7 +1230,7 @@ final_tbl &lt;- left_join(world, useful_map, by = &#39;countries&#39;) %&gt;%
 ggplot(final_tbl, aes(long, lat, group = group))+
   geom_polygon(aes(fill = mort_rate), color = &quot;white&quot;)+
   scale_fill_gradient(low = &#39;orange&#39;, high = &#39;red&#39;, na.value = &#39;white&#39;)</code></pre>
-<p><img src="journal_files/figure-html/unnamed-chunk-7-1.png" width="1440" /></p>
+<p><img src="journal_files/figure-html/unnamed-chunk-11-1.png" width="1440" /></p>
 </div>
 
 
