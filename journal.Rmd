@@ -270,7 +270,7 @@ knitr::kable(table_of_prices[1:10, ], caption = 'Rosebike.com bicycle prices')
 
 
 ## Data Wrangling a) 
-```
+```{r, echo = TRUE}
 
 
 library(vroom)
