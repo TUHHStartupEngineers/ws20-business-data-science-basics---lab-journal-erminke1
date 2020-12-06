@@ -27,7 +27,7 @@ Last compiled: `r Sys.Date()`
 ```{r, echo = TRUE}
 # 1.0 Load libraries ----
 
-library('tidyverse')
+library(tidyverse)
 library(readxl)
 library(lubridate)
 
@@ -559,30 +559,19 @@ library(lubridate)
 
 
 
-
+# For patent_tbl
 col_types <- list(
   id = col_character(),
-  type = col_character(),
   number = col_character(),
-  country = col_character(),
   date = col_date("%Y-%m-%d"),
-  abstract = col_character(),
-  title = col_character(),
-  kind = col_character(),
-  num_claims = col_double(),
-  filename = col_character(),
-  withdrawn = col_double()
+  num_claims = col_double()
 )
 
 
-
-
-#For Uspc
+#For Uspc_tbl
 col_types1 <- list(
-  uuid = col_character(),
   patent_id = col_character(),
   mainclass_id = col_character(),
-  subclass_id = col_character(),
   sequence = col_character ()
 )
 
@@ -590,8 +579,6 @@ col_types1 <- list(
 col_types2 <- list(
   id = col_character(),
   type = col_character(),
-  name_first = col_character(),
-  name_last = col_character(),
   organization = col_character()
 )
 
@@ -608,8 +595,8 @@ col_types3 <- list(
 
 
 
-doc_path <- ("C:/Users/Ermin Kevric/Desktop/TUHH/Semester I/Course Material/8. Business basics/Data Wrangling Patents/patent.tsv")
-doc_path1 <- ("C:/Users/Ermin Kevric/Desktop/TUHH/Semester I/Course Material/8. Business basics/DS_101/00_data/03_tidying/uspc.tsv")
+doc_path <- ("C:/Users/Ermin Kevric/Desktop/test tbls/patent.tsv")
+doc_path1 <- ("C:/Users/Ermin Kevric/Desktop/test tbls/uspc.tsv")
 doc_path2 <- ("C:/Users/Ermin Kevric/Desktop/TUHH/Semester I/Course Material/8. Business basics/DS_101/00_data/03_tidying/assignee.tsv")
 doc_path3 <- ("C:/Users/Ermin Kevric/Desktop/TUHH/Semester I/Course Material/8. Business basics/DS_101/00_data/03_tidying/patent_assignee.tsv")
 
@@ -638,24 +625,25 @@ pat_assignee_tbl <- vroom(                  # TBL for patetn-assigned comp.
   col_types  = col_types3,
   na         = c("", "NA", "NULL")
 )
-  
-  
+
+
   # Find the names of top 10 us companies 
 
 corporations_id_names <- assignee_tbl %>%
   select(id, type, organization) %>%
-  filter(type == 2) %>%
-  rename(assignee_id = id)# This here makes sure they're from USA 
+  filter(type == 2 | type == 3) %>%
+  rename(assignee_id = id)# This here makes sure they're compaines worldwide
 
 
-
+corp_worldwide_patents <- pat_assignee_tbl %>%
+  filter(pat_assignee_tbl$assignee_id %in% corporations_id_names$assignee_id)
 
 # Top companies in the world which have been assigned a patent. 
 # We can group by the assignee_id, which is unique to each corporation, 
 # and then simply count the number of patents for that corporation.
 
 
-top_patent_wrld <- pat_assignee_tbl %>%
+top_patent_wrld <- corp_worldwide_patents %>%
   group_by(assignee_id) %>%
   summarize(
     count = n()
@@ -663,33 +651,38 @@ top_patent_wrld <- pat_assignee_tbl %>%
   ) %>%
   ungroup() %>%
   arrange(desc(count)) %>%
-  
-  head(100)           # Top 100 companies in the world which have been granted a patent.
+  head(10)           
 
 
+# Top 100 companies in the world which have been granted a patent.
 # Top 100 companies in the world is reasonably high to cross reference with
 # U.S companies. To do this, a right_join by their unique id can be used.
 
-top_10_us <- right_join(top_patent_wrld, corporations_id_names, by = 'assignee_id') %>%
-  head(10) %>%
-  select(assignee_id)
 
+# Patent asgn table has assigne_id and patent_id
+# Check which ones from the top 10 companies are in patent_assignee_tbl 
+
+patents_orgs <- pat_assignee_tbl %>%
+  filter(pat_assignee_tbl$assignee_id %in% top_patent_wrld$assignee_id)
+
+
+# The patents_orgs table has the top 10 companies worldwide in terms of patents, and their patents, and ids.
+# Uspc_tbl has patents and the corresponding mainclassids.
+# We shoud group by the mainclass id and count 
 
 uspc_tbl_filtered <- uspc_tbl %>%
   select(mainclass_id, patent_id, sequence) %>%
-  filter(sequence == 0) %>%
-  left_join(pat_assignee_tbl, by = 'patent_id') %>%
-  merge(top_10_us, by = 'assignee_id') %>%
+  left_join(patents_orgs, by = 'patent_id') %>%
   group_by(mainclass_id) %>%
   summarize(
     count = n() 
   )%>%
   arrange(desc(count)) %>%
-  head(10) %>%
-  select(mainclass_id)
+  head(10)
+
 
 memory.limit(size = 6000)
-temp3 = "C:/Users/Ermin Kevric/Documents/GitHub/ws20-business-data-science-basics---lab-journal-erminke1/data3.rds"
+temp3 = "C:/Users/Ermin Kevric/Documents/GitHub/ws20-business-data-science-basics---lab-journal-erminke1/data33.rds"
 write_rds(uspc_tbl_filtered, temp3)
   
 ```
@@ -697,7 +690,8 @@ write_rds(uspc_tbl_filtered, temp3)
 
 
 ```{r, echo = TRUE}
-read_rds("C:/Users/Ermin Kevric/Documents/GitHub/ws20-business-data-science-basics---lab-journal-erminke1/data3.rds")
+read_rds("C:/Users/Ermin Kevric/Documents/GitHub/ws20-business-data-science-basics---lab-journal-erminke1/data33.rds") %>%
+  select(mainclass_id)
 ```
 
 
@@ -751,6 +745,7 @@ covid_data_tbl2 %>%
 ## Data Visualization b)
 
 ```{r, echo = TRUE}
+
 
 
 library(tidyverse)

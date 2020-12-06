@@ -410,12 +410,12 @@ div.tocify {
 </div>
 
 
-<p>Last compiled: 2020-12-02</p>
+<p>Last compiled: 2020-12-06</p>
 <div id="introduction-to-tidyverse-challenge" class="section level2">
 <h2><span class="header-section-number">0.1</span> Introduction to tidyverse challenge</h2>
 <pre class="r"><code># 1.0 Load libraries ----
 
-library(&#39;tidyverse&#39;)
+library(tidyverse)
 library(readxl)
 library(lubridate)
 
@@ -987,30 +987,19 @@ library(lubridate)
 
 
 
-
+# For patent_tbl
 col_types &lt;- list(
   id = col_character(),
-  type = col_character(),
   number = col_character(),
-  country = col_character(),
   date = col_date(&quot;%Y-%m-%d&quot;),
-  abstract = col_character(),
-  title = col_character(),
-  kind = col_character(),
-  num_claims = col_double(),
-  filename = col_character(),
-  withdrawn = col_double()
+  num_claims = col_double()
 )
 
 
-
-
-#For Uspc
+#For Uspc_tbl
 col_types1 &lt;- list(
-  uuid = col_character(),
   patent_id = col_character(),
   mainclass_id = col_character(),
-  subclass_id = col_character(),
   sequence = col_character ()
 )
 
@@ -1018,8 +1007,6 @@ col_types1 &lt;- list(
 col_types2 &lt;- list(
   id = col_character(),
   type = col_character(),
-  name_first = col_character(),
-  name_last = col_character(),
   organization = col_character()
 )
 
@@ -1036,8 +1023,8 @@ col_types3 &lt;- list(
 
 
 
-doc_path &lt;- (&quot;C:/Users/Ermin Kevric/Desktop/TUHH/Semester I/Course Material/8. Business basics/Data Wrangling Patents/patent.tsv&quot;)
-doc_path1 &lt;- (&quot;C:/Users/Ermin Kevric/Desktop/TUHH/Semester I/Course Material/8. Business basics/DS_101/00_data/03_tidying/uspc.tsv&quot;)
+doc_path &lt;- (&quot;C:/Users/Ermin Kevric/Desktop/test tbls/patent.tsv&quot;)
+doc_path1 &lt;- (&quot;C:/Users/Ermin Kevric/Desktop/test tbls/uspc.tsv&quot;)
 doc_path2 &lt;- (&quot;C:/Users/Ermin Kevric/Desktop/TUHH/Semester I/Course Material/8. Business basics/DS_101/00_data/03_tidying/assignee.tsv&quot;)
 doc_path3 &lt;- (&quot;C:/Users/Ermin Kevric/Desktop/TUHH/Semester I/Course Material/8. Business basics/DS_101/00_data/03_tidying/patent_assignee.tsv&quot;)
 
@@ -1066,24 +1053,25 @@ pat_assignee_tbl &lt;- vroom(                  # TBL for patetn-assigned comp.
   col_types  = col_types3,
   na         = c(&quot;&quot;, &quot;NA&quot;, &quot;NULL&quot;)
 )
-  
-  
+
+
   # Find the names of top 10 us companies 
 
 corporations_id_names &lt;- assignee_tbl %&gt;%
   select(id, type, organization) %&gt;%
-  filter(type == 2) %&gt;%
-  rename(assignee_id = id)# This here makes sure they&#39;re from USA 
+  filter(type == 2 | type == 3) %&gt;%
+  rename(assignee_id = id)# This here makes sure they&#39;re compaines worldwide
 
 
-
+corp_worldwide_patents &lt;- pat_assignee_tbl %&gt;%
+  filter(pat_assignee_tbl$assignee_id %in% corporations_id_names$assignee_id)
 
 # Top companies in the world which have been assigned a patent. 
 # We can group by the assignee_id, which is unique to each corporation, 
 # and then simply count the number of patents for that corporation.
 
 
-top_patent_wrld &lt;- pat_assignee_tbl %&gt;%
+top_patent_wrld &lt;- corp_worldwide_patents %&gt;%
   group_by(assignee_id) %&gt;%
   summarize(
     count = n()
@@ -1091,48 +1079,54 @@ top_patent_wrld &lt;- pat_assignee_tbl %&gt;%
   ) %&gt;%
   ungroup() %&gt;%
   arrange(desc(count)) %&gt;%
-  
-  head(100)           # Top 100 companies in the world which have been granted a patent.
+  head(10)           
 
 
+# Top 100 companies in the world which have been granted a patent.
 # Top 100 companies in the world is reasonably high to cross reference with
 # U.S companies. To do this, a right_join by their unique id can be used.
 
-top_10_us &lt;- right_join(top_patent_wrld, corporations_id_names, by = &#39;assignee_id&#39;) %&gt;%
-  head(10) %&gt;%
-  select(assignee_id)
 
+# Patent asgn table has assigne_id and patent_id
+# Check which ones from the top 10 companies are in patent_assignee_tbl 
+
+patents_orgs &lt;- pat_assignee_tbl %&gt;%
+  filter(pat_assignee_tbl$assignee_id %in% top_patent_wrld$assignee_id)
+
+
+# The patents_orgs table has the top 10 companies worldwide in terms of patents, and their patents, and ids.
+# Uspc_tbl has patents and the corresponding mainclassids.
+# We shoud group by the mainclass id and count 
 
 uspc_tbl_filtered &lt;- uspc_tbl %&gt;%
   select(mainclass_id, patent_id, sequence) %&gt;%
-  filter(sequence == 0) %&gt;%
-  left_join(pat_assignee_tbl, by = &#39;patent_id&#39;) %&gt;%
-  merge(top_10_us, by = &#39;assignee_id&#39;) %&gt;%
+  left_join(patents_orgs, by = &#39;patent_id&#39;) %&gt;%
   group_by(mainclass_id) %&gt;%
   summarize(
     count = n() 
   )%&gt;%
   arrange(desc(count)) %&gt;%
-  head(10) %&gt;%
-  select(mainclass_id)
+  head(10)
+
 
 memory.limit(size = 6000)
-temp3 = &quot;C:/Users/Ermin Kevric/Documents/GitHub/ws20-business-data-science-basics---lab-journal-erminke1/data3.rds&quot;
+temp3 = &quot;C:/Users/Ermin Kevric/Documents/GitHub/ws20-business-data-science-basics---lab-journal-erminke1/data33.rds&quot;
 write_rds(uspc_tbl_filtered, temp3)</code></pre>
-<pre class="r"><code>read_rds(&quot;C:/Users/Ermin Kevric/Documents/GitHub/ws20-business-data-science-basics---lab-journal-erminke1/data3.rds&quot;)</code></pre>
+<pre class="r"><code>read_rds(&quot;C:/Users/Ermin Kevric/Documents/GitHub/ws20-business-data-science-basics---lab-journal-erminke1/data33.rds&quot;) %&gt;%
+  select(mainclass_id)</code></pre>
 <pre><code>## # A tibble: 10 x 1
 ##    mainclass_id
 ##    &lt;chr&gt;       
 ##  1 257         
-##  2 438         
-##  3 707         
-##  4 709         
-##  5 365         
-##  6 370         
-##  7 711         
-##  8 395         
-##  9 345         
-## 10 713</code></pre>
+##  2 455         
+##  3 370         
+##  4 438         
+##  5 709         
+##  6 435         
+##  7 514         
+##  8 345         
+##  9 348         
+## 10 375</code></pre>
 </div>
 <div id="data-visualization-a" class="section level2">
 <h2><span class="header-section-number">0.7</span> Data Visualization a)</h2>
